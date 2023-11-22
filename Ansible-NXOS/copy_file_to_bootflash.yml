@@ -1,0 +1,16 @@
+---
+
+- hosts: all
+  serial: 1
+  tasks:
+    - name: copy from server to device
+      nxos_file_copy:
+        local_file: /tmp/testfile.txt
+        remote_file: testfile.txt
+      when: ansible_host != "172.20.59.1" 
+
+    - name: Verify file is copied
+      nxos_command:
+        commands: "dir bootflash:"
+      register: show_bootflash
+      failed_when: "'testfile.txt' not in show_bootflash.stdout | join('')" 

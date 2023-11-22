@@ -1,0 +1,18 @@
+---
+
+- hosts: N1
+
+  tasks:
+    #- name: copy from server to device
+    #  cisco.nxos.nxos_file_copy:
+    #    local_file: /tmp/testfile.txt
+    #    remote_file: testfile.txt
+    
+    - name: Gather Ansible Facts About DC Core
+      nxos_facts:
+        gather_subset:
+          - all
+
+    # Print facts on screen #          
+    - debug: 
+        msg: "{{ ansible_facts }}"
