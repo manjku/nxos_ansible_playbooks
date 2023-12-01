@@ -1,0 +1,11 @@
+---
+
+- hosts: all
+  serial: 1
+  tasks:
+    - name: Verify file is copied
+      nxos_command:
+        commands: "dir bootflash:"
+      register: show_bootflash
+    - debug:
+        msg: "{{show_bootflash}}"

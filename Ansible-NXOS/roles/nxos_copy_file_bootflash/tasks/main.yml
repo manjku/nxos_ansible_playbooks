@@ -1,0 +1,23 @@
+---
+# tasks file for nxos_copy_file_bootflash
+- name: delete file from device
+  nxos_command:
+    commands:
+      - delete bootflash:"{{ nxos_file }}" no-prompt
+  when: nxos_delete_file == true
+  tags: delete_file
+
+- name: copy from server to device
+  nxos_file_copy:
+    #local_file: /tmp/testfile.pfx
+    #remote_file: testfile.pfx
+    local_file: "{{ local_file_location }}"
+    remote_file: "{{ nxos_file }}"
+  tags: copy_file  
+
+- name: Verify file is copied
+  nxos_command:
+    commands: "dir bootflash:"
+  register: show_bootflash
+  failed_when: nxos_file not in show_bootflash.stdout | join('') 
+  tags: verify_copy_file

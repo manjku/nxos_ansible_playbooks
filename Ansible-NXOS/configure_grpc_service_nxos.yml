@@ -1,0 +1,16 @@
+---
+
+- hosts: N1
+  gather_facts: no
+  serial: 1
+  roles:
+    - role: nxos_copy_file_bootflash
+      vars:
+        local_file_location: /tmp/gnmi.pfx
+        nxos_file: gnmi.pfx
+    
+    - role: nxos_configure_grpc
+      vars:
+        pfx_file: gnmi.pfx
+        pfx_passphrase: test_pass
+        trustpoint: gnmi

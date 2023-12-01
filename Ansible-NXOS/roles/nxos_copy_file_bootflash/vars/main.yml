@@ -1,0 +1,4 @@
+---
+local_file_location: /tmp/testfile.txt
+nxos_file: testfile.txt 
+nxos_delete_file: true
