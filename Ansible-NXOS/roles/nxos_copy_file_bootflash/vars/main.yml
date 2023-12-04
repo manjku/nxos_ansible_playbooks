@@ -1,4 +1,5 @@
 ---
-local_file_location: /tmp/testfile.txt
-nxos_file: testfile.txt 
+local_file_location: /tmp/gnmi.pfx
+nxos_file: gnmi.pfx 
 nxos_delete_file: true
+verify_file_copy: true

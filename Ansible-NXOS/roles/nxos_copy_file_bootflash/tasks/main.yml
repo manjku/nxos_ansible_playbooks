@@ -3,7 +3,7 @@
 - name: delete file from device
   nxos_command:
     commands:
-      - delete bootflash:"{{ nxos_file }}" no-prompt
+      - delete bootflash:gnmi.pfx no-prompt
   when: nxos_delete_file == true
   tags: delete_file
 
@@ -20,4 +20,5 @@
     commands: "dir bootflash:"
   register: show_bootflash
   failed_when: nxos_file not in show_bootflash.stdout | join('') 
+  when: verify_file_copy == true
   tags: verify_copy_file

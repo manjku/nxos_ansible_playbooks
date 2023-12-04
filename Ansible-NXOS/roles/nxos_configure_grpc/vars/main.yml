@@ -1,2 +1,3 @@
 ---
 # vars file for configure_grpc
+unconfigure_grpc_nxos: false
