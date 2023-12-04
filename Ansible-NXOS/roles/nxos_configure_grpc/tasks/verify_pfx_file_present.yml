@@ -1,0 +1,6 @@
+- name: Verify pfx file present in bootflash
+  nxos_command:
+    commands: "dir bootflash:"
+  register: show_bootflash
+  failed_when: pfx_file not in show_bootflash.stdout | join('')
+  tags: verify_pfx_file_present_nxos
