@@ -3,19 +3,17 @@
 - hosts: N1
   #gather_facts: no
   serial: 1
-
-  tasks:
-    #- name: Print the hostvars variable
-    #  debug:
-    #    var=hostvars[inventory_hostname]["ansible_net_system"]
-
-    # use --tags to choose a specific task to run with choosen tag 
+  vars:
+    configure_grpc_nxos: true
+    
+  tasks: 
     - include_role: 
         name: nxos_copy_file_bootflash
       vars:
         local_file_location: /tmp/gnmi.pfx
         nxos_file: gnmi.pfx
       tags: [copy_file, verify_copy_file, delete_file]
+      when: configure_grpc_nxos == true
     
     - include_role: 
         name: nxos_configure_grpc
@@ -24,8 +22,18 @@
         pfx_passphrase: test_pass
         trustpoint: gnmi
       when: ansible_net_system == "nxos" 
-      tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos, unconfigure_grpc_nxos]      
+      tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos, unconfigure_grpc_nxos]   
+      when: configure_grpc_nxos == true   
 
-
+    - include_role: 
+        name: nxos_configure_grpc
+        tasks_from: unconfigure_grpc.yml
+      vars:
+        pfx_file: gnmi.pfx
+        pfx_passphrase: test_pass
+        trustpoint: gnmi
+      when: ansible_net_system == "nxos" 
+      tags: [unconfigure_grpc_nxos]   
+      when: configure_grpc_nxos == false
 
 

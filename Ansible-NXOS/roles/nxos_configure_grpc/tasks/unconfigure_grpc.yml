@@ -6,4 +6,3 @@
       - no crypto key generate rsa label {{ trustpoint }}
       - no feature grpc
   tags: unconfigure_grpc_nxos
-  when: unconfigure_grpc_nxos == true
