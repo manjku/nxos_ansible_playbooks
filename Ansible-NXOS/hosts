@@ -1,0 +1,11 @@
+nxos:
+  hosts:
+    N1:
+      ansible_host: 172.20.59.1
+    N2:
+      ansible_host: 
+
+linuxhost:
+  hosts:
+    mypc:
+      ansible_host: 172.20.200.167

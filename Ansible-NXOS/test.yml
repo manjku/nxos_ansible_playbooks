@@ -1,39 +1,12 @@
 ---
 
-- hosts: N1
-  #gather_facts: no
+- hosts: mypc
+  gather_facts: no
   serial: 1
-  vars:
-    configure_grpc_nxos: true
   tasks:
-    - block:
-        - include_role: 
-            name: nxos_copy_file_bootflash
-          vars:
-            local_file_location: /tmp/gnmi.pfx
-            nxos_file: gnmi.pfx
-          tags: [copy_file, verify_copy_file, delete_file]
-      
-        - include_role: 
-            name: nxos_configure_grpc
-          vars:
-            pfx_file: gnmi.pfx
-            pfx_passphrase: test_pass
-            trustpoint: gnmi
-          tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos]      
-      when: 
-        - ansible_net_system == "nxos"
-        - configure_grpc_nxos == true
-    
-    - block:
-        - include_role: 
-            name: nxos_configure_grpc
-            tasks_from: unconfigure_grpc.yml
-          vars:
-            pfx_file: gnmi.pfx
-            pfx_passphrase: test_pass
-            trustpoint: gnmi
-          tags: [unconfigure_grpc_nxos]      
-      when: 
-        - ansible_net_system == "nxos"
-        - configure_grpc_nxos == false
+    - name: Verify yang model capabilities can be retrieved by gnmic client
+      shell: cat /home/manoj/gnmi-eve-ng-lab.yaml
+      register: shell_output
+
+    - debug:
+        msg: "{{shell_output}}"

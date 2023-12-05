@@ -5,12 +5,12 @@
   serial: 1
   vars:
     configure_grpc_nxos: true
-    
+
   tasks: 
     - include_role: 
         name: nxos_copy_file_bootflash
       vars:
-        local_file_location: /tmp/gnmi.pfx
+        local_file_location: "{{inventory_dir}}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
         nxos_file: gnmi.pfx
       tags: [copy_file, verify_copy_file, delete_file]
       when: configure_grpc_nxos == true
@@ -35,5 +35,6 @@
       when: ansible_net_system == "nxos" 
       tags: [unconfigure_grpc_nxos]   
       when: configure_grpc_nxos == false
+    
 
 
