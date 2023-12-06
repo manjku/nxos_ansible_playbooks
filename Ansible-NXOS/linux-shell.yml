@@ -1,0 +1,12 @@
+---
+- name: Shell module example
+  hosts: linux_hosts
+  tasks:
+  
+  - name: Check system information
+    shell: hostname
+    register: os_info
+    delegate_to: linux-n2
+    
+  - debug:
+      msg: "{{os_info.stdout_lines}}"
