@@ -5,7 +5,8 @@
   vars:
     foo: bar
     cops_es_nginx_foo: bar
-    gnmi_target: 172.20.59.1
+    target:
+      gnmi_target: 172.20.59.1
     gnmi_port: 50051
     gnmi_user: admin
     gnmi_pass: Changeme123!
@@ -19,7 +20,7 @@
   tasks:
     - set_fact:
         shell_gnmi_cli: >-
-          {%- set gnmi_cli = 'gnmic ' + '-a ' + gnmi_target|string + ':' + gnmi_port|string + ' -u ' + gnmi_user + ' -p ' +  gnmi_pass -%}
+          {%- set gnmi_cli = 'gnmic ' + '-a ' + target['gnmi_target']|string + ':' + gnmi_port|string + ' -u ' + gnmi_user + ' -p ' +  gnmi_pass -%}
           {%- if skip_verify -%}
           {%- set gnmi_cli = gnmi_cli + ' --skip-verify ' -%}
           {%- endif -%}
