@@ -1,12 +1,15 @@
 ---
 - name: Shell module example
   hosts: linux_hosts
+  vars:
+    username: admin
   tasks:
   
   - name: Check system information
-    shell: hostname
-    register: os_info
+    shell: gnmic -a 172.20.59.1:50051 -u {{username}} -p Changeme123! --skip-verify --tls-ca ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/certificate-gnmi-eve-ng-lab/gnmi.pem capabilities
+    register: gnmi_output
     delegate_to: linux-n2
     
   - debug:
-      msg: "{{os_info.stdout_lines}}"
+      msg: "{{gnmi_output.stdout_lines}}"
+
