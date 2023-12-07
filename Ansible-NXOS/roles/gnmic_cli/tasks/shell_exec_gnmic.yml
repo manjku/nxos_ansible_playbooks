@@ -13,7 +13,7 @@
   register: gnmi_output
   delegate_to: linux-n1
 
-- name: debug gnmi_output
-  debug:
-    # var: gnmi_output.stdout|from_json|json_query('[2].updates[0].values."System/showversion-items".bootflashSize') 
-    var: gnmi_output.stdout
+#- name: debug gnmi_output
+#  debug:
+#    # var: gnmi_output.stdout|from_json|json_query('[2].updates[0].values."System/showversion-items".bootflashSize') 
+#    var: gnmi_output.stdout

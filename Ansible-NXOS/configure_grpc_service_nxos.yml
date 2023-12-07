@@ -7,7 +7,8 @@
     configure_grpc_nxos: true
 
   tasks: 
-    - include_role: 
+    - name: Copy certificates from server to the router
+      include_role: 
         name: nxos_copy_file_bootflash
       vars:
         local_file_location: "{{inventory_dir}}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
@@ -15,7 +16,8 @@
       tags: [copy_file, verify_copy_file, delete_file]
       when: configure_grpc_nxos == true
     
-    - include_role: 
+    - name: Configure GRPC on router
+      include_role: 
         name: nxos_configure_grpc
       vars:
         pfx_file: gnmi.pfx
@@ -25,7 +27,8 @@
       tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos, unconfigure_grpc_nxos]   
       when: configure_grpc_nxos == true   
 
-    - include_role: 
+    - name: Unconfigure GRPC on router
+      include_role: 
         name: nxos_configure_grpc
         tasks_from: unconfigure_grpc.yml
       vars:
@@ -36,5 +39,22 @@
       tags: [unconfigure_grpc_nxos]   
       when: configure_grpc_nxos == false
     
+    - name: Verify capabilites on configured router from linux host using gnmic
+      include_role: 
+        name: gnmic_cli
+      vars:
+        action: capabilities
 
+    - name: Output from gnmic capabilites fetch
+      debug:
+        var: gnmi_output.stdout
 
+    - name: Verify Metric fetched from configured router using gnmic
+      include_role: 
+        name: gnmic_cli
+      vars:
+        action: get
+        
+    - name: Output from gnmic capabilites fetch
+      debug:
+        var: gnmi_output.stdout

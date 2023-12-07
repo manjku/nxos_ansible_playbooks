@@ -8,8 +8,6 @@
   tasks: 
     - include_role: 
         name: gnmic_cli
-      #vars:
-      #  local_file_location: "{{inventory_dir}}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
-      #  nxos_file: gnmi.pfx
-      #tags: [copy_file, verify_copy_file, delete_file]
-      #when: configure_grpc_nxos == true
+    - name: debug command from test.yml
+      debug:
+        var: gnmi_output.stdout
