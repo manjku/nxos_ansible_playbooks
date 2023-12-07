@@ -7,6 +7,10 @@ gnmi_pass: Changeme123!
 skip_verify: true 
 tls_ca_dir: ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/certificate-gnmi-eve-ng-lab/gnmi.pem
 action: get
-path: "/System/name"
+path: 
+  - /System/name
+  - /System/ch-items/model
+  - /System/showversion-items
+# path: "/System/name"
 debug: false
 network_os: nxos
