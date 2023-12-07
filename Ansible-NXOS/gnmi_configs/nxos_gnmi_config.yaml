@@ -1,0 +1,12 @@
+username: admin
+password: Changeme123!
+port: 50051
+timeout: 5s
+skip-verify: true
+targets:
+        172.20.59.1:
+          timeout: 2s
+          tls-ca: ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/gnmi_configs/gnmi.pem
+ 
+
+

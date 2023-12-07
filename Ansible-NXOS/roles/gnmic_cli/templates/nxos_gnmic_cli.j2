@@ -2,14 +2,19 @@
 {#- Guide: https://andreas.scherbaum.la/post/2020-07-09_use-namespace-as-global-variable-in-ansible-jinja-templates/ -#}
 
 {% set ns = namespace() %}
-{%- set ns.shell_gnmic_cli = 'gnmic ' + '-a ' + target['gnmi_target']|string + ':' + gnmi_port|string + ' -u ' + gnmi_user + ' -p ' +  gnmi_pass -%}
-{%- if skip_verify -%}
-  {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + ' --skip-verify ' -%}
+{%- set ns.shell_gnmic_cli = 'gnmic ' -%}
+{%- if gnmi_config_file -%}
+  {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + '--config ' +  gnmi_config_file + ' ' -%}
+{%- else -%}
+  {%- set ns.shell_gnmic_cli = 'gnmic ' + '-a ' + target|string + ':' + gnmi_port|string + ' -u ' + gnmi_user + ' -p ' +  gnmi_pass -%}
+  {%- if skip_verify -%}
+    {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + ' --skip-verify ' -%}
+  {%- endif -%}
+  {%- if network_os == 'nxos' -%}
+    {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + ' ' + '--tls-ca ' + ' ' + tls_ca_dir + ' ' -%} 
+  {%- endif -%}
 {%- endif -%}
-{%- if network_os == 'nxos' -%}
-  {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + ' ' + '--tls-ca ' + ' ' + tls_ca_dir + ' ' -%} 
-{%- endif -%}
-  {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + action -%}
+{%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + action -%}
 {%- if action == 'get' -%}
   {%- for each_path in path -%}
     {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + ' --path ' + each_path -%}
