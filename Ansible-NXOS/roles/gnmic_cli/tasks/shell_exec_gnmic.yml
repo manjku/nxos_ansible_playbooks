@@ -1,7 +1,18 @@
-#- name: Execute gnmic cli on linux host
-#  shell: gnmic -a 172.20.59.1:50051 -u {{username}} -p Changeme123! --skip-verify --tls-ca ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/certificate-gnmi-eve-ng-lab/gnmi.pem capabilities
-#- set_fact:
-#    shell_gnmi_cli: manoj
 - name: debug set_fact gnmi
   debug:
     var: shell_gnmic_cli
+
+#- name: Execute gnmic cli on linux host
+#  shell: hostname
+#  register: gnmi_output
+#  delegate_to: linux-n2
+
+
+- name: Execute gnmic cli on linux host
+  shell: "{{ shell_gnmic_cli }}"
+  register: gnmi_output
+  delegate_to: linux-n2
+
+- name: debug gnmi_output
+  debug:
+    var: gnmi_output.stdout|from_json|json_query('[2].updates[0].values."System/showversion-items".bootflashSize') 
