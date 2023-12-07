@@ -1,0 +1,4 @@
+
+
+- set_fact:
+    shell_gnmic_cli: "{{ lookup('template', network_os + '_gnmic_cli.j2') }}"

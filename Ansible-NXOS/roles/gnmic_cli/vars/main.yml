@@ -1,0 +1,12 @@
+---
+target:
+  gnmi_target: 172.20.59.1
+gnmi_port: 50051
+gnmi_user: admin
+gnmi_pass: Changeme123!
+skip_verify: true 
+tls_ca_dir: ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/certificate-gnmi-eve-ng-lab/gnmi.pem
+action: get
+path: "/System/name"
+debug: false
+network_os: nxos

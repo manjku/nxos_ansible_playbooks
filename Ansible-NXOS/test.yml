@@ -1,42 +1,15 @@
 ---
-- name: Shell module example
-  hosts: linux-n1
+- hosts: N1
   gather_facts: no
-  vars:
-    foo: bar
-    cops_es_nginx_foo: bar
-    gnmi_target: 172.20.59.1
-    gnmi_port: 50051
-    gnmi_user: admin
-    gnmi_pass: Changeme123!
-    skip_verify: true 
-    tls_ca_dir: ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/certificate-gnmi-eve-ng-lab/gnmi.pem
-    action: capabilities
-    network_os: nxos
+  #serial: 1
+  #vars:
+  #  configure_grpc_nxos: true
 
-  tasks:
-    - set_fact:
-        es_vhost: |
-          {% set nginx = {'v': {}} %}
-          {% set o = 'cops_es_nginx_' %}
-          {% set p = 'corpusops_nginx_' %}
-          {% for i, val in vars.items() %}
-          {%  if i.startswith(o) %}
-          {%    set _ = nginx.v.update({p+o.join(i.split(o)[1:]): val}) %}
-          {%  endif %}
-          {% endfor %}
-          {{ nginx.v | to_json}}
-    - debug:
-        var: es_vhost
-
-    - set_fact:
-        shell_gnmi_cli: >-
-          {%- set gnmi_cli = 'gnmic ' + '-a ' + gnmi_target|string + ':' + gnmi_port|string + ' -u ' + gnmi_user + ' -p ' +  gnmi_pass -%}
-          {%- if skip_verify -%}
-          {%- set gnmi_cli = gnmi_cli + ' --skip-verify ' -%}
-          {%- endif -%}
-          {%- set gnmi_cli = gnmi_cli + ' ' + '--tls-ca ' + ' ' + tls_ca_dir + ' ' + action -%}
-          {{ gnmi_cli }}
-
-    - debug:
-        var: shell_gnmi_cli
+  tasks: 
+    - include_role: 
+        name: gnmic_cli
+      #vars:
+      #  local_file_location: "{{inventory_dir}}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
+      #  nxos_file: gnmi.pfx
+      #tags: [copy_file, verify_copy_file, delete_file]
+      #when: configure_grpc_nxos == true

@@ -1,0 +1,15 @@
+{%- set shell_gnmic_cli = 'gnmic ' + '-a ' + target['gnmi_target']|string + ':' + gnmi_port|string + ' -u ' + gnmi_user + ' -p ' +  gnmi_pass -%}
+{%- if skip_verify -%}
+{%- set shell_gnmic_cli = shell_gnmic_cli + ' --skip-verify ' -%}
+{%- endif -%}
+{%- if network_os == 'nxos' -%}
+{%- set shell_gnmic_cli = shell_gnmic_cli + ' ' + '--tls-ca ' + ' ' + tls_ca_dir + ' ' -%} 
+{%- endif -%}
+{%- set shell_gnmic_cli = shell_gnmic_cli + action -%}
+{%- if action == 'get' -%}
+{%- set shell_gnmic_cli = shell_gnmic_cli + ' --path ' + path -%}
+{%- endif -%}
+{%- if debug  -%}
+{%- set shell_gnmic_cli = shell_gnmic_cli + ' --debug' -%}
+{%- endif -%}
+{{ shell_gnmic_cli }}
