@@ -1,7 +1,17 @@
 ---
-- include_tasks: verify_pfx_file_present.yml
-- include_tasks: configure_grpc.yml
-- name: Pausing for 5 seconds to start grpc server on device
-  pause:
-    seconds: 5
-- include_tasks: verify_grpc_config.yml
+- block:
+    - include_tasks: verify_pfx_file_present.yml
+    - include_tasks: configure_grpc.yml
+    - name: Pausing for 5 seconds to start grpc server on device
+      pause:
+        seconds: 5
+    - include_tasks: verify_grpc_config.yml
+  when: configure_grpc_nxos
+
+- block:
+    - include_tasks: unconfigure_grpc.yml
+    - name: Pausing for 5 seconds to stop grpc server on device
+      pause:
+        seconds: 5
+    - include_tasks: verify_grpc_unconfig.yml
+  when: not configure_grpc_nxos

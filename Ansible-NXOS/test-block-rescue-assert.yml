@@ -1,6 +1,4 @@
 - hosts: linux-n1
-  vars:
-    var1: false
   tasks:
     - block:
         - name: task 1
@@ -23,7 +21,6 @@
         - name: rescue task that runs if any task fails inside block
           ansible.builtin.debug:
             msg: "Task Rescued"
-      when: var1 == true
       #rescue:
       #  - name: show failed task @ rescue
       #    ansible.builtin.debug:

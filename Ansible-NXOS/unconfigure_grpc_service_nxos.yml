@@ -1,0 +1,17 @@
+---
+
+- hosts: N1
+  #gather_facts: no
+  serial: 1
+  tasks: 
+    - name: Unconfigure GRPC on router
+      include_role: 
+        name: nxos_configure_grpc
+      vars:
+        pfx_file: gnmi.pfx
+        pfx_passphrase: test_pass
+        trustpoint: gnmi
+        configure_grpc_nxos: false
+      when: ansible_net_system == "nxos" 
+      tags: [unconfigure_grpc_nxos]   
+    

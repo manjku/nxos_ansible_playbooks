@@ -3,9 +3,6 @@
 - hosts: N1
   #gather_facts: no
   serial: 1
-  vars:
-    configure_grpc_nxos: true
-
   tasks: 
     - name: Copy certificates from server to the router
       include_role: 
@@ -14,7 +11,6 @@
         local_file_location: "{{inventory_dir}}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
         nxos_file: gnmi.pfx
       tags: [copy_file, verify_copy_file, delete_file]
-      when: configure_grpc_nxos == true
     
     - name: Configure GRPC on router
       include_role: 
@@ -25,19 +21,6 @@
         trustpoint: gnmi
       when: ansible_net_system == "nxos" 
       tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos, unconfigure_grpc_nxos]   
-      when: configure_grpc_nxos == true   
-
-    - name: Unconfigure GRPC on router
-      include_role: 
-        name: nxos_configure_grpc
-        tasks_from: unconfigure_grpc.yml
-      vars:
-        pfx_file: gnmi.pfx
-        pfx_passphrase: test_pass
-        trustpoint: gnmi
-      when: ansible_net_system == "nxos" 
-      tags: [unconfigure_grpc_nxos]   
-      when: configure_grpc_nxos == false
     
     - name: Verify capabilites on configured router from linux host using gnmic
       include_role: 

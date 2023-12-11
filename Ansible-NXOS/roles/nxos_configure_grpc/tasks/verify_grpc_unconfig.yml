@@ -1,0 +1,7 @@
+- name: Verify grpc service is disabled
+  nxos_command:
+    commands: "show run | in grpc'"
+  register: show_grpc
+  failed_when:  
+    - show_grpc.stdout | join('') is regex('grpc')
+  tags: verify_gprc_disabled_nxos
