@@ -1,0 +1,52 @@
+- hosts: N1
+  gather_facts: no
+  vars:
+    ansible_connection: netconf
+  tasks:
+    - name: Get running configuration and state data
+      ansible.netcommon.netconf_get:
+        source: running
+        filter: |
+          <System xmlns="http://cisco.com/ns/yang/cisco-nx-os-device">
+            <name/>
+          </System>
+    
+    - name: Set hostname to some randon value in running Datastore
+      netconf_config:
+        target: running
+        content: |
+            <config>
+                <System xmlns="http://cisco.com/ns/yang/cisco-nx-os-device">
+                    <name>new_value</name>
+                </System>
+            </config>
+        get_filter: |
+          <System xmlns="http://cisco.com/ns/yang/cisco-nx-os-device">
+            <name/>
+          </System>
+      tags: configure_running_datastore
+
+    - name: Change hostname in candidate datastore and NOT Commiting the change
+      netconf_config:
+        target: candidate
+        commit: true
+        content: |
+            <config>
+                <System xmlns="http://cisco.com/ns/yang/cisco-nx-os-device">
+                    <name>test_bad_name</name>
+                </System>
+            </config>
+        get_filter: |
+          <System xmlns="http://cisco.com/ns/yang/cisco-nx-os-device">
+            <name/>
+          </System>
+      tags: configure_candidate_datastore
+
+    - name: Get hostname in candidate datastore
+      ansible.netcommon.netconf_get:
+        source: candidate
+        filter: |
+          <System xmlns="http://cisco.com/ns/yang/cisco-nx-os-device">
+            <name/>
+          </System>
+      tags: verify_candidate_datastore
