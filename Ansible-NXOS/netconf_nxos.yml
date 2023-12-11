@@ -29,7 +29,7 @@
     - name: Change hostname in candidate datastore and NOT Commiting the change
       netconf_config:
         target: candidate
-        commit: true
+        commit: false
         content: |
             <config>
                 <System xmlns="http://cisco.com/ns/yang/cisco-nx-os-device">
@@ -41,6 +41,17 @@
             <name/>
           </System>
       tags: configure_candidate_datastore
+      register: candidate_output
+
+    - name: Commit confirm the changes
+      netconf_config:
+        target: candidate
+        confirm_commit: true
+        confirm: 60
+       
+    - name:
+      debug: 
+        var: candidate_output
 
     - name: Get hostname in candidate datastore
       ansible.netcommon.netconf_get:
