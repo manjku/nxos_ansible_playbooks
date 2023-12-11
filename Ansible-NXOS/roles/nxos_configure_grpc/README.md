@@ -1,38 +1,46 @@
-Role Name
-=========
-
-A brief description of the role goes here.
+nxos_configure_grpc
+===================
+This role can be used to configure and unconfigure GRPC on nxos
 
 Requirements
 ------------
-
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- `gnmi.pfx` file must be present on bootflash needed for importing trustpoint configs. 
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+| Variable                | Required | Default | Choice       |   Description                     |
+|-------------------------|----------|---------|--------------|-----------------------------------|
+| configure_grpc_nxos     | no       | true    | true/false   |  true: Configure GRPC on nxos     |
+|                         |          |         |              |  false: Unconfigre GRPC on nxos   |
+| pfx_file                | yes      |         |              |  pfx file such as gnmi.pfx        |
+| pfx_passphrase          | yes      |         |              |  pfx_passphrase for pfx_file      |
+| trustpoint              | yes      |         |              |  Name of the trustpoint on nxos   |
 
-Dependencies
-------------
+Tags
+----
+Following tags can be used at the task level while including this role to execute particular function:
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+- `configure_grpc_nxos`: Only configure GRPC on nxos
+- `verify_pfx_file_present_nxos`: Only verify pfx_file is present in nxos bootflash
+- `verify_gprc_enabled_nxos`: Only Verify GRPC server running on nxos
+- `unconfigure_grpc_nxos`: Unconfigure GRPC 
+- `verify_gprc_disabled_nxos`: Verify GRPC server is disabled on nxos
+
 
 Example Playbook
 ----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+    - hosts: N1
+      #gather_facts: no
+      serial: 1
+      tasks: 
+        - name: Configure GRPC on router
+          include_role: 
+            name: nxos_configure_grpc
+          vars:
+            pfx_file: gnmi.pfx
+            pfx_passphrase: test_pass
+            trustpoint: gnmi
+          when: ansible_net_system == "nxos" 
+          tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos, unconfigure_grpc_nxos]
+          # Use any of the tag listed in tags during playbook execution cli using --tags option to execute only task with that tag
