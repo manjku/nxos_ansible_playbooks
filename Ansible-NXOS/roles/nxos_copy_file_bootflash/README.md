@@ -1,38 +1,45 @@
-Role Name
+nxos_copy_file_bootflash
 =========
-
-A brief description of the role goes here.
+This role can be used to copy the files from Ansible controller node to nxos bootflash.  
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Files must be present on the controller nodes.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+| Variable                | Required | Default | Comments                               |   Description                                     |
+|-------------------------|----------|---------|----------------------------------------|---------------------------------------------------|
+| local_file_location     | yes      |         | local_file_location: /tmp/gnmi.pfx     |  location of the file on Ansible node             |
+| nxos_file               | yes      |         | nxos_file: gnmi.pfx                    |  destination name of the file in nxos bootflash   |
+| nxos_delete_file        | no       |  true   |                                        |  delete nxos_file in nxos before copying          |
+| verify_file_copy        | no       |  true   |                                        |  Verify file is copied in nxos                    |
 
-Dependencies
-------------
+Tags
+----
+Following tags can be used at the task level while including this role to execute particular function:
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+- `copy_file`: Copy only file from Ansible controller node to nxos bootflash
+- `delete_file`: delete nxos_file from the nxos bootflash
+- `verify_copy_file`: Only Verify nxos_file is present after copying nxos_file to bootflash
+
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+    - hosts: N1
+      #gather_facts: no
+      serial: 1
+      tasks: 
+        - name: Copy certificates from server to the router
+          include_role: 
+            name: nxos_copy_file_bootflash
+          vars:
+            local_file_location: "{{inventory_dir}}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
+            nxos_file: gnmi.pfx
+          tags: [copy_file, verify_copy_file, delete_file]
+          # role will be in included with any of the listed tags, however only the tasks(within role) with the tag supplied during ansible-playbook cli
+          # get executed. 
+          # ansible-playbook test.yml --tags copy_file will only copy the file task in the role
