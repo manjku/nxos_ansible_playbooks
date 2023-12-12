@@ -1,5 +1,5 @@
 ---
-target: 172.20.59.1
+gnmi_target: 172.20.59.1
 gnmi_port: 50051
 gnmi_user: admin
 gnmi_pass: Changeme123!
