@@ -2,6 +2,7 @@ gnmic_cli
 =========
 This role can be used to execute gnmic client cli on linux hosts to retreive capabilites and get data from routers based on yang models.
 `gnmi_output` variable is set by this role with the gnmic cli output fetched from the router 
+
 Details of gnmic client installatin and usage can be found:
 https://aristanetworks.github.io/openmgmt/examples/gnmi-clients/gnmic/ 
 https://gnmic.openconfig.net/user_guide/configuration_intro/
@@ -89,7 +90,7 @@ Role Output Variable
           }
        
           =====
-          
+
           ok: [N1] => {
           "gnmi_output.stdout": [
               {
