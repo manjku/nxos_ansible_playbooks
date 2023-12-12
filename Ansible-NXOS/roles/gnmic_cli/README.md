@@ -7,10 +7,10 @@ https://gnmic.openconfig.net/user_guide/configuration_intro/
 
 gnmic cli can be invoked in two ways:
 - `passing parameters directly to gnmic cli`: 
-    gnmic -a host:50051 -u <username> -p <password> --skip-verify  --tls-ca  ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/certificate-gnmi-eve-ng-lab/gnmi.pem get --path /System/name --path /System/ch-items/model --path /System/showversion-items
+       gnmic -a host:50051 -u <username> -p <password> --skip-verify  --tls-ca  ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/certificate-gnmi-eve-ng-lab/gnmi.pem get --path /System/name --path /System/ch-items/model --path /System/showversion-items
 
 - `using gnmi config file with gnmic cli`: 
-    gnmic --config ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/gnmi_configs/nxos_gnmi_config.yaml get --path /System/ch-items/model --path /System/showversion-items
+       gnmic --config ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/gnmi_configs/nxos_gnmi_config.yaml get --path /System/ch-items/model --path /System/showversion-items
 
 
 Requirements
@@ -20,17 +20,18 @@ Requirements
 - `gnmic client` must be installed on the linux host from which gnmic cli is invoked: https://gnmic.openconfig.net/install/
 - `passwordless ssh` must be setup to ssh into linux host based on rsa public/private keypair: https://www.redhat.com/sysadmin/passwordless-ssh
 - `gnmi_config_file` configuration file for gnmi must be present on linux host if gnmi_config_file option is slected in the role: https://gnmic.openconfig.net/user_guide/configuration_file/
-   Sample config file for NXOS gnmic:
-       ---
-       username: <router username>
-       password: <router password>
-       port: 50051
-       timeout: 5s
-       skip-verify: true
-       targets:
-               1.1.x.x:
-                 timeout: 2s
-                 tls-ca: ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/gnmi_configs/gnmi.pem
+
+       Sample config file for NXOS gnmic:
+           ---
+           username: <router username>
+           password: <router password>
+           port: 50051
+           timeout: 5s
+           skip-verify: true
+           targets:
+                   1.1.x.x:
+                     timeout: 2s
+                     tls-ca: ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/gnmi_configs/gnmi.pem
 
 Role Variables
 --------------
