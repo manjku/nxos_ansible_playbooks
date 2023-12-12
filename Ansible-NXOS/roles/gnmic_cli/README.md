@@ -4,7 +4,9 @@ This role can be used to execute gnmic client cli on linux hosts to retreive cap
 `gnmi_output` variable is set by this role with the gnmic cli output fetched from the router 
 
 Details of gnmic client installatin and usage can be found:
+
 https://aristanetworks.github.io/openmgmt/examples/gnmi-clients/gnmic/ 
+
 https://gnmic.openconfig.net/user_guide/configuration_intro/
 
 gnmic cli can be invoked in two ways:
@@ -20,7 +22,10 @@ gnmic cli can be invoked in two ways:
 Requirements
 ------------
 - `grpc must be enabled on the router and .pem file must be present on the linux host corresponding to gnmi.pfx file in nxos bootflash` 
-   Guide to configure certificate on nxos: https://www.cisco.com/c/en/us/products/collateral/switches/nexus-9000-series-switches/white-paper-c11-744191.html#CertificatesingNMI
+   Guide to configure certificate on nxos:
+   
+   https://www.cisco.com/c/en/us/products/collateral/switches/nexus-9000-series-switches/white-paper-c11-744191.html#CertificatesingNMI
+   
 - `gnmic client` must be installed on the linux host from which gnmic cli is invoked: https://gnmic.openconfig.net/install/
 - `passwordless ssh` must be setup to ssh into linux host based on rsa public/private keypair: https://www.redhat.com/sysadmin/passwordless-ssh
 - `gnmi_config_file` configuration file for gnmi must be present on linux host if gnmi_config_file option is slected in the role: https://gnmic.openconfig.net/user_guide/configuration_file/
