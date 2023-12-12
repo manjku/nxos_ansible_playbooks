@@ -7,9 +7,11 @@ https://gnmic.openconfig.net/user_guide/configuration_intro/
 
 gnmic cli can be invoked in two ways:
 - `passing parameters directly to gnmic cli`: 
+
        gnmic -a host:50051 -u <username> -p <password> --skip-verify  --tls-ca  ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/certificate-gnmi-eve-ng-lab/gnmi.pem get --path /System/name --path /System/ch-items/model --path /System/showversion-items
 
 - `using gnmi config file with gnmic cli`: 
+
        gnmic --config ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/gnmi_configs/nxos_gnmi_config.yaml get --path /System/ch-items/model --path /System/showversion-items
 
 
