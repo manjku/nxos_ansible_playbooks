@@ -1,8 +1,8 @@
 - name: Install new certificate and enable grpc
   nxos_config:
     lines:
+      - feature grpc
       - crypto ca trustpoint {{ trustpoint }}
       - crypto ca import {{ trustpoint }} pkcs12 {{ pfx_file }} {{ pfx_passphrase }}
-      - feature grpc
       - grpc certificate {{ trustpoint }}
   tags: configure_grpc_nxos

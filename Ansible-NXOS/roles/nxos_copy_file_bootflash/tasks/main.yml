@@ -15,10 +15,18 @@
     remote_file: "{{ nxos_file }}"
   tags: copy_file  
 
-- name: Verify file is copied
-  nxos_command:
-    commands: "dir bootflash:"
-  register: show_bootflash
-  failed_when: nxos_file not in show_bootflash.stdout | join('') 
+- block:
+    - name: Retrieve the bootflash content
+      nxos_command:
+        commands: "dir bootflash:"
+      register: show_bootflash
+      
+    - name: Verify file is present in bootflash
+      assert:
+        that: 
+          - nxos_file in show_bootflash.stdout | join('')
+        fail_msg: "FAIL: {{ nxos_file }} NOT found in {{ inventory_hostname }} bootflash"
+        success_msg: "PASS: {{ nxos_file }} found in {{ inventory_hostname }} bootflash"
   when: verify_file_copy == true
   tags: verify_copy_file
+

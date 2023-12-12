@@ -59,7 +59,7 @@ Please see vars/main.yaml for variable initialisation
 | path                    | no       | /System/name   |                        |  list of yang model xpath to fetch from router : /System/ch-items/model      |
 | debug                   | no       | false          |  true/false            |  gnmic debug messages                                                        |
 | network_os              | no       | nxos           |                        |  router network os such as nxos, catalyst, cumulus                           |
-
+| gnmic_linux_host        | yes      |                |                        |  Linux host where gnmic client is installed and gnmic cli is executed        |
 
 Role Output Variable
 --------------------

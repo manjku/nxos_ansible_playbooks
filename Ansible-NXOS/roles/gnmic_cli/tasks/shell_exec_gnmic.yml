@@ -5,7 +5,7 @@
 - name: Execute gnmic cli on linux host
   shell: "{{ shell_gnmic_cli }}"
   register: gnmi_output
-  delegate_to: linux-n1
+  delegate_to: "{{ gnmic_linux_host }}"
 
 #- name: debug gnmi_output
 #  debug:

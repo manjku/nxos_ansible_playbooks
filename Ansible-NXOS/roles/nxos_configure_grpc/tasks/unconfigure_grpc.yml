@@ -1,8 +1,6 @@
 - name: Unconfigure grpc
   nxos_config:
     lines:
-      - no crypto ca trustpoint {{ trustpoint }} 
-      - no grpc certificate {{ trustpoint }}
-      - no crypto key generate rsa label {{ trustpoint }}
       - no feature grpc
+      - no crypto ca trustpoint {{ trustpoint }} 
   tags: unconfigure_grpc_nxos

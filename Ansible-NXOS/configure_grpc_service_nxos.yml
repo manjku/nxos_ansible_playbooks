@@ -3,25 +3,55 @@
 - hosts: N1
   #gather_facts: no
   serial: 1
-  tasks: 
-    - name: Copy certificates from server to the router
-      include_role: 
-        name: nxos_copy_file_bootflash
-      vars:
-        local_file_location: "{{inventory_dir}}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
-        nxos_file: gnmi.pfx
-      tags: [copy_file, verify_copy_file, delete_file]
+  vars:
+    configure_grpc_nxos: true
 
-    - name: Configure GRPC on router
-      include_role: 
-        name: nxos_configure_grpc
-      vars:
-        pfx_file: gnmi.pfx
-        pfx_passphrase: test_pass
-        trustpoint: gnmi
-      when: ansible_net_system == "nxos" 
-      tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos, unconfigure_grpc_nxos]   
-    
+  tasks: 
+    - name: Enable scp-server, copy gnmi certificates and disable scp-server feature
+      block:
+        - name: Ensure scp-server is enabled
+          cisco.nxos.nxos_feature:
+            feature: scp-server
+            state: enabled
+          tags: [copy_file]
+
+        - include_role: 
+            name: nxos_copy_file_bootflash
+          vars:
+            local_file_location: "{{inventory_dir}}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
+            nxos_file: gnmi.pfx
+          tags: [copy_file, verify_copy_file, delete_file]
+      when: configure_grpc_nxos == true
+      always:
+       - name: disable scp-server feature
+         cisco.nxos.nxos_feature:
+           feature: scp-server
+           state: disabled
+         tags: [copy_file]
+
+    - block:
+        - name: Configure GRPC on router
+          include_role: 
+            name: nxos_configure_grpc
+          vars:
+            pfx_file: gnmi.pfx
+            pfx_passphrase: test_pass
+            trustpoint: gnmi
+          when: ansible_net_system == "nxos" 
+          tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos]   
+      rescue:
+        - name: Rollback complete GRPC on {{ inventory_hostname }} as the GRPC configuration failed in config block  
+          include_role: 
+            name: nxos_configure_grpc
+          vars:
+            pfx_file: gnmi.pfx
+            pfx_passphrase: test_pass
+            trustpoint: gnmi
+            configure_grpc_nxos: false
+          when: ansible_net_system == "nxos" 
+          tags: [configure_grpc_nxos]
+
+
     - name: Fetch Capabitlies from {{ inventory_hostname }} using gnmic client
       include_role: 
         name: gnmic_cli
@@ -57,3 +87,4 @@
           - "'System/name' in gnmi_output.stdout|from_json|json_query('[0].updates[0].Path')"
         fail_msg: "FAIL: Hostname NOT received from {{ inventory_hostname}} using nxos native yang data model"
         success_msg: "PASS: Hostname received from {{ inventory_hostname}} using nxos native yang data model"
+  

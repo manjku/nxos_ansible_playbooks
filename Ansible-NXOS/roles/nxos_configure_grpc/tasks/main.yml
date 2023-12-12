@@ -7,6 +7,7 @@
       pause:
         seconds: 5
     - include_tasks: verify_grpc_config.yml
+  tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos, unconfigure_grpc_nxos]
   when: configure_grpc_nxos
 
 - block:
@@ -15,4 +16,5 @@
       pause:
         seconds: 5
     - include_tasks: verify_grpc_unconfig.yml
+  tags: [configure_grpc_nxos, unconfigure_grpc_nxos]
   when: not configure_grpc_nxos

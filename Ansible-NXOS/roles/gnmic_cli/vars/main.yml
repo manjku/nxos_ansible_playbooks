@@ -15,3 +15,4 @@ path:
   - /System/showversion-items
 debug: false
 network_os: nxos
+gnmic_linux_host: linux-n1
