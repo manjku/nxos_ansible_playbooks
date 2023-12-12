@@ -1,0 +1,3 @@
+- name: Activate openconfig package on nxos
+  nxos_command:
+    commands: "install activate mtx-openconfig-all"

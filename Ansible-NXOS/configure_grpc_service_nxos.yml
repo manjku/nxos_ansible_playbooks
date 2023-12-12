@@ -4,14 +4,14 @@
   #gather_facts: no
   serial: 1
   tasks: 
-    - name: Copy certificates from server to the router
-      include_role: 
-        name: nxos_copy_file_bootflash
-      vars:
-        local_file_location: "{{inventory_dir}}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
-        nxos_file: gnmi.pfx
-      tags: [copy_file, verify_copy_file, delete_file]
-    
+    #- name: Copy certificates from server to the router
+    #  include_role: 
+    #    name: nxos_copy_file_bootflash
+    #  vars:
+    #    local_file_location: "{{inventory_dir}}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
+    #    nxos_file: gnmi.pfx
+    #  tags: [copy_file, verify_copy_file, delete_file]
+
     - name: Configure GRPC on router
       include_role: 
         name: nxos_configure_grpc
@@ -22,7 +22,7 @@
       when: ansible_net_system == "nxos" 
       tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos, unconfigure_grpc_nxos]   
     
-    - name: Verify capabilites on configured router from linux host using gnmic
+    - name: Fetch Capabitlies from {{ inventory_hostname }} using gnmic client
       include_role: 
         name: gnmic_cli
       vars:
@@ -30,14 +30,30 @@
 
     - name: Output from gnmic capabilites fetch
       debug:
-        var: gnmi_output.stdout
+        var: gnmi_output.stdout 
 
-    - name: Verify Metric fetched from configured router using gnmic
+    - name: Verify fetched capabilities
+      assert:
+        that:
+          - "'Cisco Systems' in gnmi_output.stdout"
+        fail_msg: "FAIL: Capabilites NOT received from {{ inventory_hostname}}"
+        success_msg: "PASS: Capabilites received from {{ inventory_hostname}}"
+
+    - name: Fetch hostname from {{ inventory_hostname}} using nxos native yang data model
       include_role: 
         name: gnmic_cli
       vars:
         action: get
-        
-    - name: Output from gnmic capabilites fetch
+        path:
+          - /System/name
+  
+    - name: Output from hostname fetched with native yang data model
       debug:
-        var: gnmi_output.stdout
+        var: gnmi_output.stdout 
+
+    - name: Verify hostname is fetched correctly from {{ inventory_hostname}} using nxos native yang data model
+      assert:
+        that:
+          - "'System/name' in gnmi_output.stdout|from_json|json_query('[0].updates[0].Path')"
+        fail_msg: "FAIL: Hostname NOT received from {{ inventory_hostname}} using nxos native yang data model"
+        success_msg: "PASS: Hostname received from {{ inventory_hostname}} using nxos native yang data model"

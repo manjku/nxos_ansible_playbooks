@@ -1,12 +1,6 @@
-- name: debug set_fact gnmi
-  debug:
-    var: shell_gnmic_cli
-
-#- name: Execute gnmic cli on linux host
-#  shell: hostname
-#  register: gnmi_output
-#  delegate_to: linux-n2
-
+#- name: debug set_fact gnmi
+#  debug:
+#    var: shell_gnmic_cli
 
 - name: Execute gnmic cli on linux host
   shell: "{{ shell_gnmic_cli }}"
