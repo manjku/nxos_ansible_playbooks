@@ -4,13 +4,13 @@
   #gather_facts: no
   serial: 1
   tasks: 
-    #- name: Copy certificates from server to the router
-    #  include_role: 
-    #    name: nxos_copy_file_bootflash
-    #  vars:
-    #    local_file_location: "{{inventory_dir}}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
-    #    nxos_file: gnmi.pfx
-    #  tags: [copy_file, verify_copy_file, delete_file]
+    - name: Copy certificates from server to the router
+      include_role: 
+        name: nxos_copy_file_bootflash
+      vars:
+        local_file_location: "{{inventory_dir}}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
+        nxos_file: gnmi.pfx
+      tags: [copy_file, verify_copy_file, delete_file]
 
     - name: Configure GRPC on router
       include_role: 
