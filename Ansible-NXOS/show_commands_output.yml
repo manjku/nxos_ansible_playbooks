@@ -1,0 +1,31 @@
+---
+
+- hosts: N1
+  gather_facts: no
+  #serial: 1
+  tasks:
+    - name: Executing command
+      nxos_command:
+        commands: "show hostname"
+      register: show_output
+  
+    - name: debug command output
+      debug:
+        var: show_output.stdout[0]
+    
+    - name: Executing command
+      nxos_command:
+        #commands: "show grpc gnmi service vrf management statistics | in 'Vrf|Server.*50051'"
+        commands: "show install packages | include openconfig-all"
+      register: show_output
+  
+    - name: debug command output
+      debug:
+        var: show_output
+    
+    - name: Asserting
+      assert:
+        that:
+          - "'openconfig-all' in show_output.stdout[0]"
+        fail_msg: "FAIL: string NOT found"
+        success_msg: "PASS: String found"

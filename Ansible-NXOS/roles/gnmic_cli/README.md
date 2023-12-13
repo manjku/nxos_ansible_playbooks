@@ -55,7 +55,7 @@ Please see vars/main.yaml for variable initialisation
 | skip_verify             | no       | true           |  true/false            |  skip certificate verification received from device                          |
 | tls_ca_dir              | yes      |                |                        |  complete path to gnmi.pem file on linux host                                |
 | gnmi_config_file        | no       | false          |                        |  complete path to gnmi config file to be used in gnmic cli                   |
-| action                  | yes      |                |  [capabilities, get]   |  grpc action to be taken                                                     |
+| gnmic_action            | yes      |                |  [capabilities, get]   |  grpc action to be taken                                                     |
 | path                    | no       | /System/name   |                        |  list of yang model xpath to fetch from router : /System/ch-items/model      |
 | debug                   | no       | false          |  true/false            |  gnmic debug messages                                                        |
 | network_os              | no       | nxos           |                        |  router network os such as nxos, catalyst, cumulus                           |

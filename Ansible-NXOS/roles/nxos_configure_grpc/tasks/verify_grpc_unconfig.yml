@@ -1,7 +1,7 @@
 - name: Verify grpc service is disabled
-  nxos_command:
+  cisco.nxos.nxos_command:
     commands: "show run | in grpc'"
   register: show_grpc
-  failed_when:  
+  failed_when:
     - show_grpc.stdout | join('') is regex('grpc')
   tags: [unconfigure_grpc_nxos]

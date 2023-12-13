@@ -1,5 +1,3 @@
-
-
 - name: Generating GNMIC cli to be executed on linux server
-  set_fact:
+  ansible.builtin.set_fact:
     shell_gnmic_cli: "{{ lookup('template', network_os + '_gnmic_cli.j2') }}"

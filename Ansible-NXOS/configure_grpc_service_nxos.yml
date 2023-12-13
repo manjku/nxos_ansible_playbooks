@@ -1,13 +1,16 @@
 ---
-
-- hosts: N1
-  #gather_facts: no
+- name: Copy Certificates to device, Configure GRPC and verify metric fetch using gnmic from device
+  hosts: N1
+  # gather_facts: no
   serial: 1
   vars:
     configure_grpc_nxos: true
 
-  tasks: 
+  tasks:
     - name: Enable scp-server, copy gnmi certificates and disable scp-server feature
+      when: configure_grpc_nxos
+      vars:
+        ansible_connection: network_cli # network_cli is required for nxos_copy_file module
       block:
         - name: Ensure scp-server is enabled
           cisco.nxos.nxos_feature:
@@ -15,76 +18,84 @@
             state: enabled
           tags: [copy_file]
 
-        - include_role: 
+        - name: Copy file from linux controller node to device
+          ansible.builtin.include_role:
             name: nxos_copy_file_bootflash
           vars:
-            local_file_location: "{{inventory_dir}}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
+            local_file_location: "{{ inventory_dir }}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
             nxos_file: gnmi.pfx
+          # with ansible.builtin.include_role tags are NOT automatically inherited by the tasks in included_role,
+          # individual task within the role must have the appropriate tag
           tags: [copy_file, verify_copy_file, delete_file]
-      when: configure_grpc_nxos == true
       always:
-       - name: disable scp-server feature
+       - name: Disable scp-server feature
          cisco.nxos.nxos_feature:
            feature: scp-server
            state: disabled
          tags: [copy_file]
 
-    - block:
+    - vars:
+        ansible_connection: network_cli  # network_cli is required crypto certificate configurations
+      block:
         - name: Configure GRPC on router
-          include_role: 
+          ansible.builtin.include_role:
             name: nxos_configure_grpc
           vars:
             pfx_file: gnmi.pfx
             pfx_passphrase: test_pass
             trustpoint: gnmi
-          when: ansible_net_system == "nxos" 
-          tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos]   
+          when: ansible_net_system == "nxos"
+          tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos]
       rescue:
-        - name: Rollback complete GRPC on {{ inventory_hostname }} as the GRPC configuration failed in config block  
-          include_role: 
+        - name: Rollback complete GRPC on {{ inventory_hostname }} as the GRPC configuration failed in config block
+          ansible.builtin.include_role:
             name: nxos_configure_grpc
           vars:
             pfx_file: gnmi.pfx
             pfx_passphrase: test_pass
             trustpoint: gnmi
             configure_grpc_nxos: false
-          when: ansible_net_system == "nxos" 
+          when: ansible_net_system == "nxos"
           tags: [configure_grpc_nxos]
-
-
+    
     - name: Fetch Capabitlies from {{ inventory_hostname }} using gnmic client
-      include_role: 
+      ansible.builtin.import_role:
         name: gnmic_cli
       vars:
-        action: capabilities
+        gnmic_action: capabilities
+      tags: [verify_grpc_capabilities]   # with ansible.builtin.import_role tags are inherited automatically by all the tasks in the imported role
 
     - name: Output from gnmic capabilites fetch
-      debug:
-        var: gnmi_output.stdout 
+      ansible.builtin.debug:
+        var: gnmi_output.stdout
+      tags: [verify_grpc_capabilities]
 
     - name: Verify fetched capabilities
-      assert:
+      ansible.builtin.assert:
         that:
           - "'Cisco Systems' in gnmi_output.stdout"
-        fail_msg: "FAIL: Capabilites NOT received from {{ inventory_hostname}}"
-        success_msg: "PASS: Capabilites received from {{ inventory_hostname}}"
+        fail_msg: "FAIL: Capabilites NOT received from {{ inventory_hostname }}"
+        success_msg: "PASS: Capabilites received from {{ inventory_hostname }}"
+      tags: [verify_grpc_capabilities]
 
-    - name: Fetch hostname from {{ inventory_hostname}} using nxos native yang data model
-      include_role: 
+    - name: Fetch hostname from {{ inventory_hostname }} using nxos native yang data model
+      ansible.builtin.import_role:
         name: gnmic_cli
       vars:
-        action: get
+        gnmic_action: get
         path:
           - /System/name
-  
-    - name: Output from hostname fetched with native yang data model
-      debug:
-        var: gnmi_output.stdout 
+      tags: [verify_grpc_yang_model_fetch]
 
-    - name: Verify hostname is fetched correctly from {{ inventory_hostname}} using nxos native yang data model
-      assert:
+    - name: Output from hostname fetched with native yang data model
+      ansible.builtin.debug:
+        var: gnmi_output.stdout
+      tags: [verify_grpc_yang_model_fetch]
+
+    - name: Verify hostname is fetched correctly from {{ inventory_hostname }} using nxos native yang data model
+      ansible.builtin.assert:
         that:
           - "'System/name' in gnmi_output.stdout|from_json|json_query('[0].updates[0].Path')"
         fail_msg: "FAIL: Hostname NOT received from {{ inventory_hostname}} using nxos native yang data model"
         success_msg: "PASS: Hostname received from {{ inventory_hostname}} using nxos native yang data model"
-  
+      tags: [verify_grpc_yang_model_fetch]

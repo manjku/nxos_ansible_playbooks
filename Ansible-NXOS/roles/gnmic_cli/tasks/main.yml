@@ -1,3 +1,7 @@
 ---
-- include_tasks: create_gnmic_cli.yml
-- include_tasks: shell_exec_gnmic.yml
+- name: Creating gnmic cli using jinja template
+  ansible.builtin.include_tasks: create_gnmic_cli.yml
+
+- name: Executing gnmic cli on linux host
+  ansible.builtin.include_tasks: shell_exec_gnmic.yml
+  

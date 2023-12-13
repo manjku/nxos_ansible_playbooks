@@ -8,7 +8,7 @@ tls_ca_dir: ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/certificate-gnmi-e
 #gnmi_config_file: ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/gnmi_configs/nxos_gnmi_config.yaml
 gnmi_config_file: false
 # action can be one of [get, capabilites]
-action: capabilities
+gnmic_action: capabilities
 path: 
   - /System/name
   - /System/ch-items/model

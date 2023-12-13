@@ -1,43 +1,61 @@
-- hosts: linux-n1
+- hosts: N1
+  gather_facts: no
   vars:
     var1: false
   tasks:
-    - block:
-        - name: task 1
-          ansible.builtin.debug:
-            msg: "task 1"
-        
-        - name: Checking assert statement
-          assert:
-            that:
-              - false
-              
-        - name: fail at task 2
-          ansible.builtin.fail:
-            msg: "fail at task 2 (to be rescued)"
-        
-        - name: task 3
-          ansible.builtin.debug:
-            msg: "task 3"
-      rescue:
-        - name: rescue task that runs if any task fails inside block
-          ansible.builtin.debug:
-            msg: "Task Rescued"
-      when: var1 == true
-      #rescue:
-      #  - name: show failed task @ rescue
-      #    ansible.builtin.debug:
-      #      msg: "{{ ansible_failed_task }}"
-
-      #  - name: show failed task's result @ rescue
-      #    ansible.builtin.debug:
-      #      msg: "{{ ansible_failed_result }}"
-
-      always:
-        - name: This task always runs at the end regardless of outcome
-          ansible.builtin.debug:
-            msg: "This task will always run at the end"
-  
-    - name: task 4
+    - debug:
+        msg: "ansible_connection  global vars is: {{ansible_connection}}"
+    - name: task 1
       ansible.builtin.debug:
-        msg: "task 4"
+        msg:  "ansible_connection after setting is: {{ansible_connection}}"
+      vars:
+        ansible_connection: network_cli
+    
+    - debug:
+        msg: "ansible_connection after task execution is: {{ansible_connection}}"
+
+   
+  
+  
+  
+  
+  #tasks:
+  #  - block:
+  #      - name: task 1
+  #        ansible.builtin.debug:
+  #          msg: "task 1"
+  #      
+  #      - name: Checking assert statement
+  #        assert:
+  #          that:
+  #            - false
+  #            
+  #      - name: fail at task 2
+  #        ansible.builtin.fail:
+  #          msg: "fail at task 2 (to be rescued)"
+  #      
+  #      - name: task 3
+  #        ansible.builtin.debug:
+  #          msg: "task 3"
+  #    rescue:
+  #      - name: rescue task that runs if any task fails inside block
+  #        ansible.builtin.debug:
+  #          msg: "Task Rescued"
+  #    when: var1 == true
+  #    #rescue:
+  #    #  - name: show failed task @ rescue
+  #    #    ansible.builtin.debug:
+  #    #      msg: "{{ ansible_failed_task }}"
+#
+  #    #  - name: show failed task's result @ rescue
+  #    #    ansible.builtin.debug:
+  #    #      msg: "{{ ansible_failed_result }}"
+#
+  #    always:
+  #      - name: This task always runs at the end regardless of outcome
+  #        ansible.builtin.debug:
+  #          msg: "This task will always run at the end"
+  #
+  #  - name: task 4
+  #    ansible.builtin.debug:
+  #      msg: "task 4"

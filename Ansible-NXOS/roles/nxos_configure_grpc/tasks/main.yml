@@ -1,20 +1,22 @@
 ---
-- block:
-    - include_tasks: verify_pfx_file_present.yml
-    - include_tasks: activate_openconfig_rpm.yml
-    - include_tasks: configure_grpc.yml
+- tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos, unconfigure_grpc_nxos]
+  when: configure_grpc_nxos
+  block:
+    - ansible.builtin.include_tasks: verify_pfx_file_present.yml
+    - ansible.builtin.include_tasks: activate_openconfig_rpm.yml
+    - ansible.builtin.include_tasks: configure_grpc.yml
     - name: Pausing for 5 seconds to start grpc server on device
       pause:
         seconds: 5
-    - include_tasks: verify_grpc_config.yml
-  tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos, unconfigure_grpc_nxos]
-  when: configure_grpc_nxos
+    - ansible.builtin.include_tasks: verify_grpc_config.yml
 
-- block:
-    - include_tasks: unconfigure_grpc.yml
+- tags: [configure_grpc_nxos, unconfigure_grpc_nxos]
+  when: not configure_grpc_nxos
+  block:
+    - ansible.builtin.include_tasks: unconfigure_grpc.yml
     - name: Pausing for 5 seconds to stop grpc server on device
       pause:
         seconds: 5
-    - include_tasks: verify_grpc_unconfig.yml
-  tags: [configure_grpc_nxos, unconfigure_grpc_nxos]
-  when: not configure_grpc_nxos
+    - ansible.builtin.include_tasks: verify_grpc_unconfig.yml
+    
+  

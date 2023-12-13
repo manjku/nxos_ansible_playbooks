@@ -1,5 +1,5 @@
 - name: Unconfigure grpc
-  nxos_config:
+  cisco.nxos.nxos_config:
     lines:
       - no feature grpc
       - no crypto ca trustpoint {{ trustpoint }} 

@@ -1,5 +1,5 @@
 ---
 local_file_location: /tmp/gnmi.pfx
-nxos_file: gnmi.pfx 
-nxos_delete_file: true
+nxos_file: gnmi.pfx
+nxos_delete_file: false
 verify_file_copy: true

@@ -14,8 +14,8 @@
     {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + ' ' + '--tls-ca ' + ' ' + tls_ca_dir + ' ' -%} 
   {%- endif -%}
 {%- endif -%}
-{%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + action -%}
-{%- if action == 'get' -%}
+{%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + gnmic_action -%}
+{%- if gnmic_action == 'get' -%}
   {%- for each_path in path -%}
     {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + ' --path ' + each_path -%}
   {%- endfor -%}
