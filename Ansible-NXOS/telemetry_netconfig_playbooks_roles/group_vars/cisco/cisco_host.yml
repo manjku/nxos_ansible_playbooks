@@ -1,0 +1,8 @@
+---
+ansible_network_os: iosxr
+ansible_user: cisco
+ansible_pass: cisco
+ansible_ssh_pass: cisco
+# ansible_port: 830
+...
+

@@ -1,0 +1,20 @@
++------------------------------------------+
+|        Checking of the BGP status        |
++------------------------------------------+
+
+{% if COLLECTED.rpc_reply.data.bgp.instances is defined %}
+    Neighbor: 
+      ID:          {{ COLLECTED.rpc_reply.data.bgp.instances.instance.instance_active.default_vrf.neighbors.neighbor.neighbor_address }}
+      State:       {{ COLLECTED.rpc_reply.data.bgp.instances.instance.instance_active.default_vrf.neighbors.neighbor.connection_state }}
+      AFI/SAFI:    {% for afi in COLLECTED.rpc_reply.data.bgp.instances.instance.instance_active.default_vrf.neighbors.neighbor.af_data %}{{ afi.af_name }} {% endfor %}
+
+
+{% else %}
+    Problem with BGP process on local node ({{ inventory_hostname }})
+
+{% endif %}
+
+===========================================
+    Verification of BGP neighbors is done
+===========================================
+

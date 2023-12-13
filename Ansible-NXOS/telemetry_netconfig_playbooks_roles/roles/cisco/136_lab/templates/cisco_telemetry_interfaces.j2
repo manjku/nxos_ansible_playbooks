@@ -1,0 +1,13 @@
++------------------------------------------+
+|     Checking of the interfaces status    |
++------------------------------------------+
+
+{% for port_current in COLLECTED.rpc_reply.data.interface_properties.data_nodes.data_node.locationviews.locationview.interfaces.interface %}
+    Port:           {{ port_current.interface_name }}
+    Status:         {{ port_current.actual_line_state }}
+
+{% endfor %}
+
+===========================================
+    Verification of interfaces is done
+===========================================

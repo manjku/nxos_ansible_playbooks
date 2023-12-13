@@ -1,0 +1,11 @@
+---
+node:
+    hostname: XR3
+    vendor: cisco
+    os: iosxr
+    version: 6.1.2
+    configuration_profiles:
+        - profile: interfaces
+        - profile: routing_ospf
+        - profile: routing_bgp
+...

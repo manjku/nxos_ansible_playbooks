@@ -1,0 +1,7 @@
+{% if item.profile == 'interfaces' %}
+<interface-properties xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ifmgr-oper"/>
+{% elif item.profile == 'routing_ospf' %}
+<ospf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-ospf-oper"/>
+{% elif item.profile == 'routing_bgp' %}
+<bgp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-oper"/>
+{% endif %}

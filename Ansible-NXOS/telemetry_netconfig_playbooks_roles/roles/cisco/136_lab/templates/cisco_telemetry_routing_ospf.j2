@@ -1,0 +1,22 @@
++------------------------------------------+
+|       Checking of the OSPF status        |
++------------------------------------------+
+
+{% if COLLECTED.rpc_reply.data.ospf.processes.process.default_vrf.adjacency_information is defined %}
+    Neighbor:
+      RID:          {{ COLLECTED.rpc_reply.data.ospf.processes.process.default_vrf.adjacency_information.neighbors.neighbor.neighbor_id }}
+      IP:           {{ COLLECTED.rpc_reply.data.ospf.processes.process.default_vrf.adjacency_information.neighbors.neighbor.neighbor_address_xr }}
+      Connected to: {{ COLLECTED.rpc_reply.data.ospf.processes.process.default_vrf.adjacency_information.neighbors.neighbor.interface_name }}
+      Status:       {{ COLLECTED.rpc_reply.data.ospf.processes.process.default_vrf.adjacency_information.neighbors.neighbor.neighbor_state }}
+
+
+{% else %}
+After software update:
+    There is no OSPF neighbors detected
+
+{% endif %}
+
+===========================================
+    Verification of OSPF neighbors is done
+===========================================
+

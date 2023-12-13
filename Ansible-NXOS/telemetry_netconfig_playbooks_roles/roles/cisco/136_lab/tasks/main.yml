@@ -1,0 +1,28 @@
+---
+- name: VERIFICATION // {{ inventory_hostname }} // IMPORTING INFRASTRUCTURE PROFILE
+  include_vars:
+      file: "{{ inventory_hostname }}_infra_profile.yml"
+      name: PROFILE
+
+- name: VERIFICATION // {{ inventory_hostname }} // DELETE PREVIOUS TEST REPORT
+  file:
+      dest: /tmp/{{ inventory_hostname }}_test_report.txt
+      state: absent
+  ignore_errors: yes
+
+- name: VERIFICATION // {{ inventory_hostname }} // CREATING TEST REPORT
+  file:
+      dest: /tmp/{{ inventory_hostname }}_test_report.txt
+      state: touch
+
+- name: VERIFICATION // {{ inventory_hostname }} // COLLECTING TELEMETRY AND SEARCHING DATA
+  include_tasks: comparing_loop.yml
+  loop: "{{ PROFILE.node.configuration_profiles }}"
+
+- name: VERIFICATION // {{ inventory_hostname }} // COMPILING REPORT
+  shell: "cat /tmp/temp_report_136_{{ inventory_hostname }}_* > /tmp/{{ inventory_hostname }}_test_report.txt"
+
+- name: VERIFICATION // {{ inventory_hostname }} // REPORTING READINESS
+  debug:
+      msg: "Collection of telemetry data from {{ inventory_hostname }} is done."
+...

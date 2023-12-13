@@ -1,0 +1,29 @@
+---
+- name: VERIFICATION // {{ inventory_hostname }} // COLLECTING TELEMETRY AND SEARCHING DATA // FETCHING TELEMETRY DATA
+  netconf_get:
+      filter: "{{ lookup ('template', 'netconf_request.j2') }}"
+      display: json
+  register: output_json
+
+- name: VERIFICATION // {{ inventory_hostname }} // COLLECTING TELEMETRY AND SEARCHING DATA // SAVING TELEMETRY DATA
+  copy:
+      content: "{{ output_json.output | to_nice_json }}"
+      dest: /tmp/{{ inventory_hostname }}/{{ inventory_hostname }}_{{ item.profile }}_yang_telemetry.json
+
+- name: VERIFICATION // {{ inventory_hostname }} // COLLECTING TELEMETRY AND SEARCHING DATA // MODIFIICATION OF COLLECTED TELEMETRY FOR PYTHON PROCESSING
+  replace:
+      path: /tmp/{{ inventory_hostname }}/{{ inventory_hostname }}_{{ item.profile }}_yang_telemetry.json
+      regexp: '-'
+      replace: '_'
+
+- name: VERIFICATION // {{ inventory_hostname }} // COLLECTING TELEMETRY AND SEARCHING DATA // IMPORTING COLLECTED TELEMETRY DATA
+  include_vars:
+      file: /tmp/{{ inventory_hostname }}/{{ inventory_hostname }}_{{ item.profile }}_yang_telemetry.json
+      name: COLLECTED
+
+- name: VERIFICATION // {{ inventory_hostname }} // COLLECTING TELEMETRY AND SEARCHING DATA // COMPILING {{ item.profile }} 
+  template:
+      src: cisco_telemetry_{{ item.profile }}.j2
+      dest: /tmp/temp_report_136_{{ inventory_hostname }}_{{ item.profile }}.txt
+      mode: 0755
+...

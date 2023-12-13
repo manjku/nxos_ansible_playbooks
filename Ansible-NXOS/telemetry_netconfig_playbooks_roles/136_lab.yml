@@ -1,0 +1,11 @@
+---
+- hosts: cisco
+  connection: netconf
+  roles:
+    - { role: cisco/136_lab }
+
+- hosts: nokia
+  connection: netconf
+  roles:
+    - { role: nokia/136_lab }
+...
