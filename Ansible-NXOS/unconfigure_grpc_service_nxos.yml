@@ -6,7 +6,7 @@
   tasks: 
     - name: Unconfigure GRPC on router
       include_role: 
-        name: nxos_configure_grpc
+        name: configure_grpc
       vars:
         pfx_file: gnmi.pfx
         pfx_passphrase: test_pass

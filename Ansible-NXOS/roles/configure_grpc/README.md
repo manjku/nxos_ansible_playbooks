@@ -1,4 +1,4 @@
-nxos_configure_grpc
+configure_grpc
 ===================
 This role can be used to configure and unconfigure GRPC on nxos
 
@@ -36,7 +36,7 @@ Example Playbook
       tasks: 
         - name: Configure GRPC on router
           include_role: 
-            name: nxos_configure_grpc
+            name: configure_grpc
           vars:
             pfx_file: gnmi.pfx
             pfx_passphrase: test_pass

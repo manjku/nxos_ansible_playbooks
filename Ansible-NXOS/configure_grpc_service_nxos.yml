@@ -39,7 +39,7 @@
       block:
         - name: Configure GRPC on router
           ansible.builtin.include_role:
-            name: nxos_configure_grpc
+            name: configure_grpc
           vars:
             pfx_file: gnmi.pfx
             pfx_passphrase: test_pass
@@ -49,7 +49,7 @@
       rescue:
         - name: Rollback complete GRPC on {{ inventory_hostname }} as the GRPC configuration failed in config block
           ansible.builtin.include_role:
-            name: nxos_configure_grpc
+            name: configure_grpc
           vars:
             pfx_file: gnmi.pfx
             pfx_passphrase: test_pass

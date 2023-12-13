@@ -1,7 +1,7 @@
 - name: Verify grpc service is enabled
-  nxos_command:
+  cisco.nxos.nxos_command:
     commands: "show grpc gnmi service vrf management statistics | in 'Vrf|Server.*50051'"
   register: show_grpc
-  failed_when:  
+  failed_when:
     - show_grpc.stdout | join('') is not regex('Vrf.*management')
   tags: verify_gprc_enabled_nxos
