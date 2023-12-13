@@ -12,6 +12,12 @@
     - name: Including tasks to configure grpc on device
       ansible.builtin.include_tasks: configure_grpc.yml
 
+    - debug:
+        msg: 
+          - Successfully Activated Openconfig package
+          - Successfully configured the crypto certificates
+          - Successfuly enabled feature grpc
+          - Proceeding to verify grpc server is running on {{ inventory_hostname }}
     - name: Pausing for 5 seconds to start grpc server on device
       pause:
         seconds: 5

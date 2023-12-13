@@ -20,20 +20,27 @@
           vars:
             local_file_location: "{{ inventory_dir }}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
             nxos_file: gnmi.pfx
-          # with ansible.builtin.include_role tags are NOT automatically inherited by the tasks in included_role,
-          # individual task within the role must have the appropriate tag
-          tags: [copy_file, verify_copy_file, delete_file]
+          tags: [copy_file, verify_copy_file, delete_file]     # with ansible.builtin.include_role tags are NOT automatically inherited by the tasks in included_role,
+                                                               # individual task within the role must have the appropriate tag
         
         - name: Display file is copied successfully
           ansible.builtin.debug:
-            msg: "############### File {{ nxos_file }} successfully copied to {{ inventory_hostname }} ###############"
+            msg: "File is copied Successfully to {{ inventory_hostname }}"
+      rescue:
+        - name: Display file is NOT copied successfully
+          ansible.builtin.debug:
+            msg: "File is NOT copied Successfully to {{ inventory_hostname }}"
+
+        - name: failing the playbook for {{ inventory_hostname }}
+          fail:
+            msg: "File copy failed. Aborting playbook for {{ inventory_hostname }}"
 
       always:
-       - name: Disable scp-server feature
-         cisco.nxos.nxos_feature:
-           feature: scp-server
-           state: disabled
-         tags: [copy_file]
+        - name: Disable scp-server feature
+          cisco.nxos.nxos_feature:
+            feature: scp-server
+            state: disabled
+          tags: [copy_file]
 
     - vars:
         ansible_connection: network_cli  # network_cli is required crypto certificate configurations
@@ -47,7 +54,17 @@
             trustpoint: gnmi
           when: ansible_net_system == "nxos"
           tags: [verify_pfx_file_present, configure_grpc_config, verify_gprc_enabled]
+
+        - name: Display GRPC configured succussfully
+          ansible.builtin.debug:
+            msg: 
+              - "GRPC configuration configured successfully on {{ inventory_hostname }}"
+              - "Proceeding to verify capability and metric fetch from {{ inventory_hostname }} with gnmic client"
       rescue:
+        - name: Display GRPC configuration failed
+          ansible.builtin.debug:
+            msg: "GRPC configuration could not configured correctly on {{ inventory_hostname }}"
+
         - name: Rollback complete GRPC on {{ inventory_hostname }} as the GRPC configuration failed in config block
           ansible.builtin.include_role:
             name: configure_grpc
@@ -58,6 +75,10 @@
             configure_grpc_config: false
           when: ansible_net_system == "nxos"
           tags: [configure_grpc_config]
+        
+        - name: failing the playbook for {{ inventory_hostname }}
+          fail:
+            msg: "GRPC configuration failed. Aborting playbook for {{ inventory_hostname }}"
     
     - name: Verify capabilities and metrics can be fetched from the device
       tags: [verify_grpc_metric_fect_from_device] # use this tag to execute all the tasks in this block
@@ -108,13 +129,13 @@
           ansible.builtin.debug:
             msg: "############### Configuration of GRPC completed and Service is UP and Running on {{ inventory_hostname }} ###############"
         
-    - name: Unconfigure GRPC and verify grpc service is disabled on device
-      ansible.builtin.include_role:
-        name: configure_grpc
-      vars:
-        pfx_file: gnmi.pfx
-        pfx_passphrase: test_pass
-        trustpoint: gnmi
-        configure_grpc_config: false
-      when: ansible_net_system == "nxos"
-      tags: [unconfigure_grpc_config]
+    #- name: Unconfigure GRPC and verify grpc service is disabled on device
+    #  ansible.builtin.include_role:
+    #    name: configure_grpc
+    #  vars:
+    #    pfx_file: gnmi.pfx
+    #    pfx_passphrase: test_pass
+    #    trustpoint: gnmi
+    #    configure_grpc_config: false
+    #  when: ansible_net_system == "nxos"
+    #  tags: [unconfigure_grpc_config]
