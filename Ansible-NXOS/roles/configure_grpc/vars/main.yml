@@ -1,3 +1,3 @@
 ---
 # vars file for configure_grpc
-configure_grpc_nxos: true
+configure_grpc_config: true

@@ -3,5 +3,12 @@
     commands: "dir bootflash:"
   register: show_bootflash
   failed_when: pfx_file not in show_bootflash.stdout | join('')
-  tags: verify_pfx_file_present_nxos
-  
+  tags: [verify_pfx_file_present, configure_grpc_config]
+
+- name: Display pfx file on device verification result
+  ansible.builtin.assert:
+    that:
+      - show_bootflash.stdout | join('') is search(pfx_file)
+    fail_msg: "FAIL: pfx file NOT present on {{ inventory_hostname }}"
+    success_msg: "PASS: pfx file present on {{ inventory_hostname }}"
+  tags: [verify_pfx_file_present, configure_grpc_config]

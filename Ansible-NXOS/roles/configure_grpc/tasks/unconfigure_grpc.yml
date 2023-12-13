@@ -3,4 +3,4 @@
     lines:
       - no feature grpc
       - no crypto ca trustpoint {{ trustpoint }}
-  tags: unconfigure_grpc_nxos
+  tags: [unconfigure_grpc_config]

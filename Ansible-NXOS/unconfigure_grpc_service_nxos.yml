@@ -11,7 +11,7 @@
         pfx_file: gnmi.pfx
         pfx_passphrase: test_pass
         trustpoint: gnmi
-        configure_grpc_nxos: false
+        configure_grpc_config: false
       when: ansible_net_system == "nxos" 
-      tags: [unconfigure_grpc_nxos]   
+      tags: [unconfigure_grpc_config]   
     

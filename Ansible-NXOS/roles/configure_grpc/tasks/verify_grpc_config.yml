@@ -2,6 +2,12 @@
   cisco.nxos.nxos_command:
     commands: "show grpc gnmi service vrf management statistics | in 'Vrf|Server.*50051'"
   register: show_grpc
-  failed_when:
-    - show_grpc.stdout | join('') is not regex('Vrf.*management')
-  tags: verify_gprc_enabled_nxos
+  tags: [verify_gprc_enabled, configure_grpc_config]
+
+- name: Display grpc service verification result
+  ansible.builtin.assert:
+    that:
+      - show_grpc.stdout | join('') is search('Vrf.*management')
+    fail_msg: "FAIL: GRPC service NOT enabled on {{ inventory_hostname }}"
+    success_msg: "PASS: GRPC service enabled on {{ inventory_hostname }}"
+  tags: [verify_gprc_enabled, configure_grpc_config]

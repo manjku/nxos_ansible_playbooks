@@ -2,10 +2,12 @@
   cisco.nxos.nxos_command:
     commands: "show install packages | include openconfig-all"
   register: cmd_output
+  tags: [configure_grpc_config]
 
 # install mtx-openconfig-all pkg only if its not installed already
 - name: Activate openconfig package on nxos
   cisco.nxos.nxos_command:
     commands: "install activate mtx-openconfig-all"
   when: "'openconfig-all' not in cmd_output.stdout[0]"
+  tags: [configure_grpc_config]
   

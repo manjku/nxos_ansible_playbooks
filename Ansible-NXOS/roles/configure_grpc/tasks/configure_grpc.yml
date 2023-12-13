@@ -5,4 +5,4 @@
       - crypto ca trustpoint {{ trustpoint }}
       - crypto ca import {{ trustpoint }} pkcs12 {{ pfx_file }} {{ pfx_passphrase }}
       - grpc certificate {{ trustpoint }}
-  tags: configure_grpc_nxos
+  tags: [configure_grpc_config]

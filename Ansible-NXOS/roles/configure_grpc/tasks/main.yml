@@ -1,22 +1,36 @@
 ---
-- tags: [verify_pfx_file_present_nxos, configure_grpc_nxos, verify_gprc_enabled_nxos, unconfigure_grpc_nxos]
-  when: configure_grpc_nxos
+- tags: [configure_grpc_config]  # Tags would be inherited by all the included_tasks. Note that tags must be present at the individual tasks included with include_tasks
+  when: configure_grpc_config
   block:
-    - ansible.builtin.include_tasks: verify_pfx_file_present.yml
-    - ansible.builtin.include_tasks: activate_openconfig_rpm.yml
-    - ansible.builtin.include_tasks: configure_grpc.yml
+    - name: Including tasks for verifying pfx file on device
+      ansible.builtin.include_tasks: verify_pfx_file_present.yml
+      tags: [verify_pfx_file_present]
+
+    - name: Including tasks to activate openconfig package on device
+      ansible.builtin.include_tasks: activate_openconfig_rpm.yml
+
+    - name: Including tasks to configure grpc on device
+      ansible.builtin.include_tasks: configure_grpc.yml
+
     - name: Pausing for 5 seconds to start grpc server on device
       pause:
         seconds: 5
-    - ansible.builtin.include_tasks: verify_grpc_config.yml
 
-- tags: [configure_grpc_nxos, unconfigure_grpc_nxos]
-  when: not configure_grpc_nxos
+    - name: Including tasks for verifying grpc service 
+      ansible.builtin.include_tasks: verify_grpc_config.yml
+      tags: [verify_gprc_enabled]
+
+- tags: [configure_grpc_config, unconfigure_grpc_config] # configure_grpc_config is added here as this block should be executed in rescue if configuration of GRPC fails
+  when: not configure_grpc_config
   block:
-    - ansible.builtin.include_tasks: unconfigure_grpc.yml
+    - name: Including tasks to uncnfigure GRPC on device
+      ansible.builtin.include_tasks: unconfigure_grpc.yml
+
     - name: Pausing for 5 seconds to stop grpc server on device
       pause:
         seconds: 5
-    - ansible.builtin.include_tasks: verify_grpc_unconfig.yml
+
+    - name: Including tasks to verify GRPC is disabled on device
+      ansible.builtin.include_tasks: verify_grpc_unconfig.yml
     
   

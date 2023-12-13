@@ -2,6 +2,12 @@
   cisco.nxos.nxos_command:
     commands: "show run | in grpc'"
   register: show_grpc
-  failed_when:
-    - show_grpc.stdout | join('') is regex('grpc')
-  tags: [unconfigure_grpc_nxos]
+  tags: [unconfigure_grpc_config]
+
+- name: Display grpc service verification result
+  ansible.builtin.assert:
+    that:
+      - show_grpc.stdout | join('') is not search('grpc')
+    fail_msg: "PASS: GRPC service NOT disabled on {{ inventory_hostname }}"
+    success_msg: "PASS: GRPC service disabled on {{ inventory_hostname }}"
+  tags: [unconfigure_grpc_config]
