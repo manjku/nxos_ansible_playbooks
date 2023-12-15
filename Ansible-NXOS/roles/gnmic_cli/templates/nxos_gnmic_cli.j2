@@ -6,7 +6,14 @@
 {%- if gnmi_config_file -%}
   {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + '--config ' +  gnmi_config_file + ' ' -%}
 {%- else -%}
-  {%- set ns.shell_gnmic_cli = 'gnmic ' + '-a ' + gnmi_target|string + ':' + gnmi_port|string + ' -u ' + gnmi_user + ' -p ' +  gnmi_pass -%}
+  {%- set ns.shell_gnmic_cli = 'gnmic ' + '-a ' -%}
+  {%- for each_target in gnmi_target -%}
+    {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + each_target|string + ':' + gnmi_port|string -%}
+    {%- if not loop.last -%}
+      {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + ',' -%}
+    {%- endif -%}    
+  {%- endfor -%}
+  {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + ' -u ' + gnmi_user + ' -p ' +  gnmi_pass -%}
   {%- if skip_verify -%}
     {%- set ns.shell_gnmic_cli = ns.shell_gnmic_cli + ' --skip-verify ' -%}
   {%- endif -%}

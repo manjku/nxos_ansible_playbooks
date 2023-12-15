@@ -49,20 +49,20 @@ Role Variables
 --------------
 Please see vars/main.yaml for variable initialisation
 
-| Variable                | Required | Default        | Choice                 |   Description                                                                |
-|-------------------------|----------|----------------|------------------------|------------------------------------------------------------------------------|
-| gnmi_target             | yes      |                |                        |  router hostname/ip to send grpc requests                                    |
-| gnmi_port               | no       | 50051          |                        |  port on which grpc server listening on router                               |
-| gnmi_user               | yes      |                |                        |  username on router                                                          |
-| gnmi_pass               | yes      |                |                        |  password on router                                                          |
-| skip_verify             | no       | true           |  true/false            |  skip certificate verification received from device                          |
-| tls_ca_dir              | yes      |                |                        |  complete path to gnmi.pem file on linux host                                |
-| gnmi_config_file        | no       | false          |                        |  complete path to gnmi config file to be used in gnmic cli                   |
-| gnmic_action            | yes      |                |  [capabilities, get]   |  grpc action to be taken                                                     |
-| path                    | no       | /System/name   |                        |  list of yang model xpath to fetch from router : /System/ch-items/model      |
-| debug                   | no       | false          |  true/false            |  gnmic debug messages                                                        |
-| network_os              | no       | nxos           |                        |  router network os such as nxos, catalyst, cumulus                           |
-| gnmic_linux_host        | yes      |                |                        |  Linux host where gnmic client is installed and gnmic cli is executed        |
+| Variable                | Required | Default          | Choice                 |   Description                                                                |
+|-------------------------|----------|----------------  |------------------------|------------------------------------------------------------------------------|
+| gnmi_target             | yes      |                  |                        |  List of router hostname/ip to send grpc requests                            |
+| gnmi_port               | no       | 50051            |                        |  port on which grpc server listening on router                               |
+| gnmi_user               | no       | ansible_user     |                        |  username on router                                                          |
+| gnmi_pass               | no       | ansible_password |                        |  password on router                                                          |
+| skip_verify             | no       | true             |  true/false            |  skip certificate verification received from device                          |
+| tls_ca_dir              | yes      |                  |                        |  complete path to gnmi.pem file on linux host                                |
+| gnmi_config_file        | no       | false            |                        |  complete path to gnmi config file to be used in gnmic cli                   |
+| gnmic_action            | yes      |                  |  [capabilities, get]   |  grpc action to be taken                                                     |
+| path                    | no       | /System/name     |                        |  List of yang model xpath to fetch from router : /System/ch-items/model      |
+| debug                   | no       | false            |  true/false            |  gnmic debug messages                                                        |
+| network_os              | no       | nxos             |                        |  router network os such as nxos, catalyst, cumulus                           |
+| gnmic_linux_host        | yes      |                  |                        |  Linux host where gnmic client is installed and gnmic cli is executed        |
 
 Role Output Variable
 --------------------
@@ -78,8 +78,12 @@ Role Output Variable
              include_role: 
                name: gnmic_cli
              vars:
-               action: capabilities
-               gnmi_config_file: ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/gnmi_configs/nxos_gnmi_config.yaml
+               gnmic_action: capabilities
+               gnmi_target: 
+                 - 172.20.59.1
+               path:
+                 - /System/name
+                 - /System/ch-items/model
        
            - name: Output from gnmic capabilites fetch
              debug:

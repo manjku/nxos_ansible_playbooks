@@ -1,5 +1,7 @@
 ---
-gnmi_target: 172.20.59.1
+gnmi_target: 
+  - 172.20.59.1
+  # - 172.20.59.2
 gnmi_port: 50051
 gnmi_user: "{{ ansible_user }}"
 gnmi_pass: "{{ ansible_password }}"
