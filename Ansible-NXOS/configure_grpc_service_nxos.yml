@@ -1,9 +1,27 @@
 ---
 - name: Copy Certificates to device, Configure GRPC and verify metric fetch using gnmic from device
   hosts: N1
-  # gather_facts: no
   serial: 1
+  vars_prompt:
+    - name: ansible_password
+      prompt: Enter the network password
+      private: true
+  serial: 1
+  gather_facts: no
   tasks:
+    - name: Gather System information from switch
+      nxos_facts:
+        gather_subset: hardware
+      tags: [verify_switch_hardware]
+
+    - name: Verify switch is Nexus
+      ansible.builtin.assert:
+        that:
+          - ansible_net_system == 'nxos'
+        fail_msg: "FAIL: Switch {{ inventory_hostname }} is NOT Nexus. Not proceeding further in playbook"
+        success_msg: "PASS: Switch is Nexus. Proceeding to next task in playbook"
+      tags: [verify_switch_hardware]
+
     - name: Enable scp-server, copy gnmi certificates and disable scp-server feature
       vars:
         ansible_connection: network_cli # network_cli is required for nxos_copy_file module
@@ -52,7 +70,6 @@
             pfx_file: gnmi.pfx
             pfx_passphrase: test_pass
             trustpoint: gnmi
-          when: ansible_net_system == "nxos"
           tags: [verify_pfx_file_present, configure_grpc_config, verify_gprc_enabled]
 
         - name: Display GRPC configured succussfully
@@ -73,7 +90,6 @@
             pfx_passphrase: test_pass
             trustpoint: gnmi
             configure_grpc_config: false
-          when: ansible_net_system == "nxos"
           tags: [configure_grpc_config]
         
         - name: failing the playbook for {{ inventory_hostname }}

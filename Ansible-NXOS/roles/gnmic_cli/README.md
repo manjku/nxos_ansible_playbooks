@@ -27,7 +27,10 @@ Requirements
    https://www.cisco.com/c/en/us/products/collateral/switches/nexus-9000-series-switches/white-paper-c11-744191.html#CertificatesingNMI
    
 - `gnmic client` must be installed on the linux host from which gnmic cli is invoked: https://gnmic.openconfig.net/install/
-- `passwordless ssh` must be setup to ssh into linux host based on rsa public/private keypair: https://www.redhat.com/sysadmin/passwordless-ssh
+
+- `passwordless ssh` must be setup to ssh from ansible controller node into linux host(where gnmic client is installed) 
+   based on rsa public/private keypair: https://www.redhat.com/sysadmin/passwordless-ssh . Variable gnmic_linux_host can be set to the desired linux host.
+
 - `gnmi_config_file` configuration file for gnmi must be present on linux host if gnmi_config_file option is slected in the role: https://gnmic.openconfig.net/user_guide/configuration_file/
 
        Sample config file for NXOS gnmic:

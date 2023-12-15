@@ -5,6 +5,3 @@ ansible_httpapi_use_ssl: yes
 ansible_httpapi_validate_certs: no
 ansible_network_os: nxos
 ansible_user: admin
-#ansible_nxos_password comes from ssh_cred file
-#ansible_password: "{{ ansible_nxos_password }}"
-ansible_password: Changeme123!

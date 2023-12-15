@@ -1,8 +1,8 @@
 ---
 gnmi_target: 172.20.59.1
 gnmi_port: 50051
-gnmi_user: admin
-gnmi_pass: Changeme123!
+gnmi_user: "{{ ansible_user }}"
+gnmi_pass: "{{ ansible_password }}"
 skip_verify: true
 tls_ca_dir: ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/certificate-gnmi-eve-ng-lab/gnmi.pem
 # gnmi_config_file: ~/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/gnmi_configs/nxos_gnmi_config.yaml
