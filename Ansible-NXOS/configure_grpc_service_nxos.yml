@@ -9,6 +9,7 @@
   serial: 1
   gather_facts: no
   tasks:
+# Verify the host is nxos switch and terminate playbook for the host if it is not
     - name: Gather System information from switch
       nxos_facts:
         gather_subset: hardware
@@ -22,6 +23,7 @@
         success_msg: "PASS: Switch is Nexus. Proceeding to next task in playbook"
       tags: [verify_switch_hardware]
 
+# This block copy the .pem files to nxos device
     - name: Enable scp-server, copy gnmi certificates and disable scp-server feature
       vars:
         ansible_connection: network_cli # network_cli is required for nxos_copy_file module
@@ -52,7 +54,6 @@
         - name: failing the playbook for {{ inventory_hostname }}
           fail:
             msg: "File copy failed. Aborting playbook for {{ inventory_hostname }}"
-
       always:
         - name: Disable scp-server feature
           cisco.nxos.nxos_feature:
@@ -60,6 +61,8 @@
             state: disabled
           tags: [copy_file]
 
+# This block configure and verify grpc configuration. 
+# Rollback of configuration is done if some error occurs during configuration and verificaiton
     - vars:
         ansible_connection: network_cli  # network_cli is required crypto certificate configurations
       block:
@@ -95,7 +98,8 @@
         - name: failing the playbook for {{ inventory_hostname }}
           fail:
             msg: "GRPC configuration failed. Aborting playbook for {{ inventory_hostname }}"
-    
+
+# This block verify capabilites and metrics can be fetched from devices as a result of previous configuration     
     - name: Verify capabilities and metrics can be fetched from the device
       tags: [verify_grpc_metric_fect_from_device] # use this tag to execute all the tasks in this block
       block:
