@@ -1,19 +1,22 @@
 ---
 - name: Copy Certificates to device, Configure GRPC and verify metric fetch using gnmic from device
-  hosts: N2
+  hosts: N1
   serial: 1
   vars_prompt:
-    - name: ansible_password
+    - name: ansible_httpapi_pass
       prompt: Enter the network password
       private: true
   serial: 1
   gather_facts: no
   tasks:
+    - set_fact:
+        ansible_ssh_pass: "{{ ansible_httpapi_pass }}"
+        
 # Verify the host is nxos switch and terminate playbook for the host if it is not
     - name: Gather System information from switch
       nxos_facts:
         gather_subset: hardware
-      tags: [verify_switch_hardware]
+      
 
     - name: Verify switch is Nexus
       ansible.builtin.assert:
@@ -38,7 +41,7 @@
           ansible.builtin.include_role:
             name: nxos_copy_file_bootflash
           vars:
-            local_file_location: "{{ inventory_dir }}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
+            # local_file_location: "{{ inventory_dir }}/certificate-gnmi-eve-ng-lab/gnmi.pfx"
             nxos_file: gnmi.pfx
           tags: [copy_file, verify_copy_file, delete_file]     # with ansible.builtin.include_role tags are NOT automatically inherited by the tasks in included_role,
                                                                # individual task within the role must have the appropriate tag
@@ -70,9 +73,6 @@
           ansible.builtin.include_role:
             name: configure_grpc
           vars:
-            pfx_file: gnmi.pfx
-            pfx_passphrase: test_pass
-            trustpoint: gnmi
           tags: [verify_pfx_file_present, configure_grpc_config, verify_gprc_enabled]
 
         - name: Display GRPC configured succussfully
@@ -89,9 +89,6 @@
           ansible.builtin.include_role:
             name: configure_grpc
           vars:
-            pfx_file: gnmi.pfx
-            pfx_passphrase: test_pass
-            trustpoint: gnmi
             configure_grpc_config: false
           tags: [configure_grpc_config]
         
@@ -102,8 +99,6 @@
 # This block verify capabilites and metrics can be fetched from devices as a result of previous configuration     
     - name: Verify capabilities and metrics can be fetched from the device
       tags: [verify_grpc_metric_fect_from_device] # use this tag to execute all the tasks in this block
-      vars:
-        gnmic_linux_host: linux-n1
       block:
         - name: Fetch Capabitlies from {{ inventory_hostname }} using gnmic client
           ansible.builtin.import_role:
@@ -130,8 +125,6 @@
             name: gnmic_cli
           vars:
             gnmic_action: get
-            path:
-              - /System/name
           tags: [verify_grpc_yang_model_fetch]
     
         - name: Output from hostname fetched with native yang data model

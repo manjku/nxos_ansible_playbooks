@@ -55,7 +55,7 @@ Please see vars/main.yaml for variable initialisation
 |                         |          |                             |                        |  if using inventory_hostname, DNS lookup on linux host must match inventory  |
 | gnmi_port               | no       | 50051                       |                        |  port on which grpc server listening on router                               |
 | gnmi_user               | no       | ansible_user                |                        |  username on router                                                          |
-| gnmi_pass               | no       | ansible_password            |                        |  password on router                                                          |
+| gnmi_pass               | no       | ansible_httpapi_pass        |                        |  password on router                                                          |
 | skip_verify             | no       | true                        |  true/false            |  skip certificate verification received from device                          |
 | tls_ca_dir              | yes      |                             |                        |  complete path to gnmi.pem file on linux host                                |
 | gnmi_config_file        | no       | false                       |                        |  complete path to gnmi config file to be used in gnmic cli                   |

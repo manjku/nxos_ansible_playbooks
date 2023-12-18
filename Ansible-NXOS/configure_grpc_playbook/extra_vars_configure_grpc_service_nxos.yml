@@ -1,0 +1,13 @@
+---
+# nxos_copy_file_bootflash role variables
+local_file_location: /tmp/gnmi.pfx
+
+# configure_grpc role variables
+pfx_file: gnmi.pfx
+pfx_passphrase: test_gnmi_password
+trustpoint: gnmi
+
+# gnmic_cli role variables
+path:
+  - /System/name
+gnmic_linux_host: linux-n1
