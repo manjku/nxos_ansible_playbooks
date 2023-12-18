@@ -1,6 +1,7 @@
 ---
 gnmi_target: 
-  - 172.20.59.1
+  - "{{ inventory_hostname }}"
+  #- 172.20.59.1
   # - 172.20.59.2
 gnmi_port: 50051
 gnmi_user: "{{ ansible_user }}"
@@ -17,4 +18,4 @@ path:
   - /System/showversion-items
 debug: false
 network_os: nxos
-gnmic_linux_host: linux-n1
+gnmic_linux_host: linux-hostname

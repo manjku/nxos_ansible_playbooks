@@ -1,6 +1,6 @@
 ---
 - name: Copy Certificates to device, Configure GRPC and verify metric fetch using gnmic from device
-  hosts: N1
+  hosts: N2
   serial: 1
   vars_prompt:
     - name: ansible_password
@@ -102,6 +102,8 @@
 # This block verify capabilites and metrics can be fetched from devices as a result of previous configuration     
     - name: Verify capabilities and metrics can be fetched from the device
       tags: [verify_grpc_metric_fect_from_device] # use this tag to execute all the tasks in this block
+      vars:
+        gnmic_linux_host: linux-n1
       block:
         - name: Fetch Capabitlies from {{ inventory_hostname }} using gnmic client
           ansible.builtin.import_role:
