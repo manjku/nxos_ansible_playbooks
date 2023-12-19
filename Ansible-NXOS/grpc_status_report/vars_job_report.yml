@@ -1,0 +1,17 @@
+---
+# Location for job reports
+outdir: /var/tmp/reports
+# CSS styling for navbar: menu width, failed/missing colors
+nav_width: 200px
+failed_style: 'color:orangered'
+missing_style: 'color:grey;text-decoration:line-through'
+# Email options
+send_email: false
+smtp_host: mail.yourcompany.com
+smtp_port: 25
+mail_from: "source@email.com"
+mail_to: "dest1@email.com,dest2@email.com"
+mail_subject: "Ansible job report"
+# Uncomment these if authentication is required
+#smtp_user:
+#smtp_pass:

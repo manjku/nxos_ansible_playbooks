@@ -1,37 +1,17 @@
 ---
+# Playbook execution:
+# ansible-playbook grpc_status_report/job_report.yml --extra-vars "@grpc_status_report/vars_job_report.yml"
 
 - name: Run jobs and generate report
-  hosts: N1
+  hosts: nxos
   gather_facts: no
   order: sorted
-
-  collections:
-    - ansible.builtin
-    - community.general
-
-  vars:
-    # Location for job reports
-    outdir: /var/tmp/reports
-    # CSS styling for navbar: menu width, failed/missing colors
-    nav_width: 200px
-    failed_style: 'color:orangered'
-    missing_style: 'color:grey;text-decoration:line-through'
-    # Email options
-    send_email: false
-    smtp_host: mail.yourcompany.com
-    smtp_port: 25
-    mail_from: "source@email.com"
-    mail_to: "dest1@email.com,dest2@email.com"
-    mail_subject: "Ansible job report"
-    # Uncomment these if authentication is required
-    #smtp_user:
-    #smtp_pass: 
+  vars_prompt:
+    - name: ansible_httpapi_pass
+      prompt: Enter the network password
+      private: true
 
   pre_tasks:
-  
-    - set_fact:
-        ansible_httpapi_pass: Changeme123!
-
     - name: Create output folder
       run_once: yes
       delegate_to: localhost
@@ -45,13 +25,6 @@
         job_success: False
         missing: True
 
-    # - name: Variables before setup 
-    #   debug:
-    #     var: vars
-
-    # - name: Gather {{ inventory_hostname }} facts and weed out unavailable hosts
-    #   setup:
-    
     - name: Gather System information from {{ inventory_hostname }}
       nxos_facts:
         gather_subset: hardware
@@ -60,69 +33,43 @@
       set_fact:
         missing: False
 
-    # - name: Variables After setup 
-    #   debug:
-    #     var: vars
-
   tasks:
+    - name: Checking NXOS Pass/Fail Criteria to set Job Status for {{ inventory_hostname }}
+      ignore_errors: yes
+      when: ansible_net_system == 'nxos'
+      vars:
+        gnmic_linux_host: linux-n1
+      block:
+        - name: Fetch Capabitlies from {{ inventory_hostname }} using gnmic client
+          ansible.builtin.import_role:
+            name: gnmic_cli
+          vars:
+            gnmic_action: capabilities            
     
-    ############################
-    # Add your own tasks here! #
-    ############################
-    - name: Fetch Capabitlies from {{ inventory_hostname }} using gnmic client
-      ansible.builtin.import_role:
-        name: gnmic_cli
-      vars:
-        gnmic_action: capabilities  
-        gnmic_linux_host: linux-n1
-      ignore_errors: yes
+        - name: Set gnmi_output_capabilities facts
+          set_fact:
+            gnmi_output_capabilities: "{{ gnmi_output }}"
+    
+        - name: Fetch hostname from {{ inventory_hostname }} using yang data model
+          ansible.builtin.import_role:
+            name: gnmic_cli
+          vars:
+            gnmic_action: get
+            path:
+              - System/name
+            
+        - name: Set yang data model output gnmi_output_metrics facts
+          set_fact:
+            gnmi_output_metrics: "{{ gnmi_output }}"
+    
+        - name: Output from hostname fetched with native yang data model
+          ansible.builtin.debug:
+            var: gnmi_output.stdout
 
-    - name: Set capbilities output facts
-      set_fact:
-        gnmi_output_capabilities: "{{ gnmi_output }}"
-
-    - name: Output from gnmic capabilites fetch on {{ inventory_hostname }}
-      ansible.builtin.debug:
-        var: gnmi_output.stdout
-
-    - name: Verify fetched capabilities from {{ inventory_hostname }}
-      ansible.builtin.assert:
-        that:
-          - "'Cisco Systems' in gnmi_output.stdout"
-        fail_msg: "FAIL: Capabilites NOT received from {{ inventory_hostname }}"
-        success_msg: "PASS: Capabilites received from {{ inventory_hostname }}"
-
-    - name: Fetch hostname from {{ inventory_hostname }} using yang data model
-      ansible.builtin.import_role:
-        name: gnmic_cli
-      vars:
-        gnmic_action: get
-        path:
-          - System/name
-        gnmic_linux_host: linux-n1
-      ignore_errors: yes
-
-    - name: Set yang data model output facts
-      set_fact:
-        gnmi_output_metrics: "{{ gnmi_output }}"
-
-    - name: Output from hostname fetched with native yang data model
-      ansible.builtin.debug:
-        var: gnmi_output.stdout
-
-    - name: Verify hostname is fetched correctly from {{ inventory_hostname }} using nxos native yang data model
-      ansible.builtin.assert:
-        that:
-          - "'System/name' in gnmi_output.stdout|from_json|json_query('[0].updates[0].Path')"
-        fail_msg: "FAIL: Hostname NOT received from {{ inventory_hostname}} using nxos native yang data model"
-        success_msg: "PASS: Hostname received from {{ inventory_hostname}} using nxos native yang data model"
-      ignore_errors: yes
-
-    - debug:
-        var: vars
+        - debug:
+            var: vars
 
   post_tasks:
-
     - name: Mark host as successful if capablities and hostname can be fetched with yang models
       set_fact:
         job_success: True
@@ -130,11 +77,6 @@
         - "'Cisco Systems' in gnmi_output_capabilities.stdout"
         - "'System/name' in gnmi_output_metrics.stdout|from_json|json_query('[0].updates[0].Path')"
       
-
-    # - name: Variables after job_success 
-    #   debug:
-    #     var: vars
-
     # Saving curated lists of hosts as localhost facts, to make the Jinja loops easier to read in the template. 
     # To use: hostvars['localhost']['success_list'] , etc
     - name: Save summary facts under Ansible controller
@@ -154,13 +96,7 @@
         date: "{{ '%Y-%m-%d' | strftime }}"
         hms_pretty: "{{ '%H:%M:%S' | strftime }}"
         hms: "{{ hms_pretty | replace(':','-') }}"
-    
-    # - debug:
-    #     msg:
-    #       - "{{ hostvars['localhost'] }}"
-    #       - "success_list: {{ hostvars['localhost']['success_list'] }}"
-    #       - "failed_list: {{ hostvars['localhost']['failed_list'] }}"
-    #       - "missing_list: {{ hostvars['localhost']['missing_list'] }}"
+
     - name: Save job report to {{ outdir }}
       delegate_to: localhost
       delegate_facts: True

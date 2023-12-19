@@ -1,0 +1,258 @@
+<html>
+<head>
+  <!-- Viewport options can make the page scale better on mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+  <!-- CSS styling for our HTML report -->
+  /* Most of this CSS stuff is copypasta from https://www.w3schools.com */
+/* To generate your own CSS stylesheet, see: https://www.w3schools.com/css/css_templates.asp*/
+
+/* Note that we use a variable from the playbook to tune the navbar width ( 200px )*/
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Style the side navigation */
+.sidenav {
+  height: 100%;
+  width: 200px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+}
+
+/* Side navigation links */
+.sidenav a {
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  font-weight: normal;
+  font-size: small;
+}
+
+/* Side navigation text */
+.sidenav p {
+  color: lightgray;
+  padding: 5px;
+  text-decoration: none;
+  display: block;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Change color on hover */
+.sidenav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* Style the content */
+.content {
+  margin-left: 200px;
+  padding-left: 10px;
+}
+
+/* Used for any "command output" boxes */
+.code {
+  background: #f9f9f9 none repeat scroll 0 0;
+  border: 1px solid #aaa;
+  display: table;
+  font-size: 100%;
+  font-family: monospace;
+  margin-bottom: 1em;
+  padding: 10px;
+  width: 95%;
+}
+
+/* Enable smart text-wrapping for any 'pre' tags (command output) */
+pre { white-space: pre-wrap; }
+
+/* Misc. formatting for tables, headers, etc */
+table { border:1px solid grey; }
+th {
+  padding: 2px;
+  border: 1px solid grey;
+}
+td { padding: 2px; }
+h2 {color: blue;}
+h3 {color: blue;}  </style>
+
+</head>
+
+<body>
+
+  <!-- This is our left-hand menu and navigation bar.
+  We will generate links for each host, breaking them up by job status. 
+  The color / style for failed and missing hosts can be tuned in playbook vars. -->
+
+  <div class="sidenav">
+    <p><a style="text-align:center;font-weight:bold;font-size:medium" href="#summary">Summary</a></p>
+    <hr>
+    <p>Host Results</p>
+        <a  href="#N1">N1</a>
+        <a  href="#N2">N2</a>
+        <a style="color:grey;text-decoration:line-through" href="#N3">N3</a>
+        <hr>
+    <p>Missing Hosts</p>
+          <a href="#N3">N3</a>
+        <hr>
+    <p>Failed Hosts</p>
+      </div>
+
+  <div class="content">
+
+    <h1 id="top">Job Status Report</h1>
+    <p><i>Job started 2023-12-19 17:22:51</i></p>
+    <hr>
+
+    <h1 id="summary">Summary</h1>
+
+    <p><strong>Host Totals:</strong></p>
+      <ul>
+        <li>Successful: 2 </li>
+        <li>Failed: 0 </li>
+        <li>Missing: 1 </li>
+        <li>Total: 3</li>
+      </ul>
+
+    <!-- Now we loop through the hosts in our play, and generate per-host report fragments.-->
+    <!-- Using loop variable 'thehost' to avoid clobbering with 'items'. -->
+              <!-- This is a 'child' template sourced from our master report template. -->
+    <!-- To reference a host's facts, use our loop variable named thehost, i.e. hostvars[thehost]['some_fact'] -->
+    <hr>
+    <h2 id="N1">N1</h2>
+
+    <!-- If host was missing, give a generic error. Otherwise, print facts and job output. Use default() to guard against missing variables. -->
+    
+      
+      <p><strong>Host info:</strong></p>
+      <ul>
+        <li>Hostname : N1</li>
+        <li>Platform : N9K-C9300v</li>
+        <li>Network OS : nxos</li>
+        <li>Network OS Version : 10.4(1)</li>
+      </ul>
+
+      <p>Job Status: <strong>Success</strong></p>
+
+      <!-- We don't indent anything between 'pre' tags , because the space will be taken literally -->
+      <p><strong>GNMI capabilities fetch output:</strong></p>
+      <div class="code">
+        <pre>
+gNMI version: 0.8.0
+supported models:
+  - Cisco-NX-OS-device, Cisco Systems, Inc., 2023-08-16
+  - DME, Cisco Systems, Inc., 
+  - Cisco-NX-OS-Syslog-oper, Cisco Systems, Inc., 2019-08-15
+supported encodings:
+  - JSON
+  - PROTO
+        </pre>
+      </div>
+
+            <p><strong>GNMI hostname yang model metric fetch output:</strong></p>
+      <div class="code">
+        <pre>
+[
+  {
+    "source": "N1:50051",
+    "timestamp": 1703004366739280164,
+    "time": "2023-12-19T16:46:06.739280164Z",
+    "updates": [
+      {
+        "Path": "System/name",
+        "values": {
+          "System/name": "N1"
+        }
+      }
+    ]
+  }
+]
+        </pre>
+      </div>
+      
+                  <!-- This is a 'child' template sourced from our master report template. -->
+    <!-- To reference a host's facts, use our loop variable named thehost, i.e. hostvars[thehost]['some_fact'] -->
+    <hr>
+    <h2 id="N2">N2</h2>
+
+    <!-- If host was missing, give a generic error. Otherwise, print facts and job output. Use default() to guard against missing variables. -->
+    
+      
+      <p><strong>Host info:</strong></p>
+      <ul>
+        <li>Hostname : N2</li>
+        <li>Platform : N9K-C9300v</li>
+        <li>Network OS : nxos</li>
+        <li>Network OS Version : 10.4(1)</li>
+      </ul>
+
+      <p>Job Status: <strong>Success</strong></p>
+
+      <!-- We don't indent anything between 'pre' tags , because the space will be taken literally -->
+      <p><strong>GNMI capabilities fetch output:</strong></p>
+      <div class="code">
+        <pre>
+gNMI version: 0.8.0
+supported models:
+  - Cisco-NX-OS-device, Cisco Systems, Inc., 2023-08-16
+  - DME, Cisco Systems, Inc., 
+  - Cisco-NX-OS-Syslog-oper, Cisco Systems, Inc., 2019-08-15
+supported encodings:
+  - JSON
+  - PROTO
+        </pre>
+      </div>
+
+            <p><strong>GNMI hostname yang model metric fetch output:</strong></p>
+      <div class="code">
+        <pre>
+[
+  {
+    "source": "N2:50051",
+    "timestamp": 1703006200178954457,
+    "time": "2023-12-19T17:16:40.178954457Z",
+    "updates": [
+      {
+        "Path": "System/name",
+        "values": {
+          "System/name": "N2"
+        }
+      }
+    ]
+  }
+]
+        </pre>
+      </div>
+      
+                  <!-- This is a 'child' template sourced from our master report template. -->
+    <!-- To reference a host's facts, use our loop variable named thehost, i.e. hostvars[thehost]['some_fact'] -->
+    <hr>
+    <h2 id="N3">N3</h2>
+
+    <!-- If host was missing, give a generic error. Otherwise, print facts and job output. Use default() to guard against missing variables. -->
+    
+      <p style="color:red;"><strong>Host was unavailable at the time of this job; please investigate whether this was a planned or unplanned outage.</strong></p>
+
+            
+    <hr>
+    <p><i>Generated by Ansible playbook <strong>/home/neteng/ansible_dir/nxos_ansible_playbooks/Ansible-NXOS/grpc_status_report/job_report.yaml</strong></i></p>
+  
+  </div>
+
+
+</body>
+
+</html>
