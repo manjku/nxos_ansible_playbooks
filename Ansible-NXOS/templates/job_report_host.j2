@@ -1,0 +1,58 @@
+    <!-- This is a 'child' template sourced from our master report template. -->
+    <!-- To reference a host's facts, use our loop variable named thehost, i.e. hostvars[thehost]['some_fact'] -->
+    <hr>
+    <h2 id="{{ thehost }}">{{ thehost }}</h2>
+
+    <!-- If host was missing, give a generic error. Otherwise, print facts and job output. Use default() to guard against missing variables. -->
+    {% if hostvars[thehost]['missing']|bool %}
+
+      <p style="color:red;"><strong>Host was unavailable at the time of this job; please investigate whether this was a planned or unplanned outage.</strong></p>
+
+    {% else %}
+
+      {% if not hostvars[thehost]['job_success']|bool %}<p style="color:red"><strong>Host encountered issues during job execution, see information below.</strong></p>{% endif %}
+
+      <p><strong>Host info:</strong></p>
+      <ul>
+        <li>Hostname : {{ hostvars[thehost]['ansible_facts']['net_hostname'] | default('N/A') }}</li>
+        <li>Platform : {{ hostvars[thehost]['ansible_facts']['net_platform'] | default('N/A') }}</li>
+        <li>Network OS : {{ hostvars[thehost]['ansible_facts']['net_system'] | default('N/A') }}</li>
+        <li>Network OS Version : {{ hostvars[thehost]['ansible_facts']['net_version'] | default('N/A') }}</li>
+      </ul>
+
+      <p>Job Status: <strong>{% if hostvars[thehost]['job_success']|bool %}Success{% else %}Failed{% endif %}</strong></p>
+
+      <!-- We don't indent anything between 'pre' tags , because the space will be taken literally -->
+      <p><strong>GNMI capabilities fetch output:</strong></p>
+      <div class="code">
+        <pre>
+{{ hostvars[thehost]['gnmi_output_capabilities']['stdout'] | default('no output') | trim }}
+        </pre>
+      </div>
+
+      {% if hostvars[thehost]['gnmi_output_capabilities']['stderr_lines'] | d([]) | length > 0 %}
+        <!-- This code snippet will only appear if our command task had any lines printed to stderr -->
+        <p><strong>GNMI capabilities errors:</strong></p>
+        <div class="code">
+          <pre>
+{{ hostvars[thehost]['gnmi_output_capabilities']['stderr'] | default('no output') | trim }}
+          </pre>
+        </div>
+      {% endif %}
+      <p><strong>GNMI hostname yang model metric fetch output:</strong></p>
+      <div class="code">
+        <pre>
+{{ hostvars[thehost]['gnmi_output_metrics']['stdout'] | default('no output') | trim }}
+        </pre>
+      </div>
+      {% if hostvars[thehost]['gnmi_output_metrics']['stderr_lines'] | d([]) | length > 0 %}
+        <!-- This code snippet will only appear if our command task had any lines printed to stderr -->
+        <p><strong>GNMI hostname yang model metric errors:</strong></p>
+        <div class="code">
+          <pre>
+{{ hostvars[thehost]['gnmi_output_metrics']['stderr'] | default('no output') | trim }}
+          </pre>
+        </div>
+      {% endif %}
+
+    {% endif %}
