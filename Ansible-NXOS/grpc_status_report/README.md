@@ -1,17 +1,14 @@
 # Overview
+This playbook runs a sample command, gathers some facts, and generates an HTML summary report. The playbook can send the report as an HTML attachment.
+The report is pure HTML + CSS, with no external dependencies or javascript.
 
 
-
-# Sample html report
-
+## Sample html report
 
 ![Screenshot1](grpc_status_1.png)
 ![Screenshot2](grpc_status_2.png)
 ![Screenshot3](grpc_status_3.png)
 
-This playbook runs a sample command, gathers some facts, and generates an HTML summary report. The playbook can send the report as an HTML attachment.
-
-The report is pure HTML + CSS, with no external dependencies or javascript.
 
 ## Contents
 ```
