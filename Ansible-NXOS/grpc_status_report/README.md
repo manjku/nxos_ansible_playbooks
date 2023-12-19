@@ -2,7 +2,7 @@
 
 For Ansible jobs that have reporting or auditing requirements, a common pattern is to create an HTML summary report of the work that was done. It's easier than you think, especially if you have an example to start with!
 
-![Demo](demo.gif)
+![Screenshot](grpc_status_1.png)
 
 This playbook runs a sample command, gathers some facts, and generates an HTML summary report. The playbook can send the report as an HTML attachment.
 
