@@ -5,9 +5,9 @@ The report is pure HTML + CSS, with no external dependencies or javascript.
 
 ## Sample html report
 
-![Screenshot1](grpc_status_1.png)
-![Screenshot2](grpc_status_2.png)
-![Screenshot3](grpc_status_3.png)
+![Screenshot1](./png_files/grpc_status_1.png)
+![Screenshot2](./png_files/grpc_status_2.png)
+![Screenshot3](./png_files/grpc_status_3.png)
 
 
 ## Contents
