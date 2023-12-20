@@ -56,7 +56,7 @@
           vars:
             gnmic_action: get
             path:
-              - System/name
+              - /system/config/hostname
             
         - name: Set yang data model output gnmi_output_metrics facts
           set_fact:
@@ -74,8 +74,9 @@
       set_fact:
         job_success: True
       when:
-        - "'Cisco Systems' in gnmi_output_capabilities.stdout"
-        - "'System/name' in gnmi_output_metrics.stdout|from_json|json_query('[0].updates[0].Path')"
+        - "'gNMI version' in gnmi_output_capabilities.stdout"
+        - "'hostname' in gnmi_output_metrics.stdout|from_json|json_query('[0].updates[0].Path')"
+        - 
       
     # Saving curated lists of hosts as localhost facts, to make the Jinja loops easier to read in the template. 
     # To use: hostvars['localhost']['success_list'] , etc

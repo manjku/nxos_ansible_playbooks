@@ -1,4 +1,7 @@
 ---
+# Playbook execution
+# ansible-playbook configure_grpc_playbook/configure_grpc_service_nxos.yml --extra-vars "@configure_grpc_playbook/extra_vars_configure_grpc_service_nxos.yml"
+
 - name: Copy Certificates to device, Configure GRPC and verify metric fetch using gnmic from device
   hosts: N1
   serial: 1
