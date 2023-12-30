@@ -1,0 +1,1442 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: test-netmon-eval-group
+      folder: test-alert-rules
+      interval: 1m
+      rules:
+        - uid: fbd94943-693f-4a10-aed6-78fff1f193a5
+          title: Test-cpu-monitor-alert
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 21600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: |-
+                    from(bucket: "nxos_metrics")
+                      |> range(start: v.timeRangeStart, stop: v.timeRangeStop)
+                      |> filter(fn: (r) => r["_measurement"] == "cumulus_cpu_30_seconds")
+                      |> filter(fn: (r) => r["_field"] == "avg")
+                      |> filter(fn: (r) => r["index"] == "ALL")
+                      |> filter(fn: (r) => r["path"] == "/system/cpus/cpu")
+                      |> filter(fn: (r) => r["source"] == "entorswc111")
+                      |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)
+                      |> yield(name: "mean")
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 21600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                settings:
+                    mode: ""
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 21600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 65
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: f82223f4-031f-46c4-811a-2ec3e96a9dc7
+          panelId: 1
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            __dashboardUid__: f82223f4-031f-46c4-811a-2ec3e96a9dc7
+            __panelId__: "1"
+            summary: testing cpu alert for entorswc110
+          labels:
+            label: cpu
+          isPaused: false
+    - orgId: 1
+      name: 1minute_evaluation
+      folder: nxos_alerts
+      interval: 1m
+      rules:
+        - uid: d7b4e3e1-c147-4a8f-bda9-c865dfaaece7
+          title: nxos_cpu_usageavg
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: |-
+                    from(bucket: "nxos_metrics")
+                      |> range(start: -5m)
+                      |> filter(fn: (r) => r["_measurement"] == "nxos_native_cpu")
+                      |> filter(fn: (r) => r["_field"] == "usageAvg")
+                      |> unique(column: "_value")
+                      |> max()
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: mean
+                refId: B
+                settings:
+                    mode: ""
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 90
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: Alerting
+          execErrState: Alerting
+          for: 1m
+          labels:
+            device_type: nxos
+            metric: nxos_cpu_avgusage
+            severity: High
+          isPaused: false
+        - uid: a0cfdb88-79be-4c85-965b-9e7213dc6b91
+          title: nxos_native_system_alarms
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: "from(bucket: \"nxos_metrics\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"nxos_native_system_alarms\")\n  |> filter(fn: (r) => r[\"_field\"] == \"severity_level\")\n  |> unique(column: \"description\")  "
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 8
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          labels:
+            device_type: nxos
+            metric: nxos_native_system_alarms
+            severity: High
+          isPaused: false
+        - uid: a14c5ffb-f358-4494-929f-79b72c1a8be0
+          title: nxos_psu_operational_status_down
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: "from(bucket: \"nxos_metrics\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"nxos_native_psu_oper_stats\")\n  |> filter(fn: (r) => r[\"_field\"] == \"psu_operational_state\")\n  |> unique(column: \"_value\")  "
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            description: Alarm checks if PSU is down
+          labels:
+            device_type: nxos
+            metric: nxos_native_psu_oper_stats
+            severity: High
+          isPaused: false
+        - uid: b6c4a5d1-3f45-4ea5-9270-c661a9b2a197
+          title: nxos_input_ifcounters_errors
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: |
+                    from(bucket: "nxos_metrics")
+                      |> range(start: -1m)
+                      |> filter(fn: (r) => r["_measurement"] == "nxos_native_input_ifcounters")
+                      |> filter(fn: (r) => r["_field"] == "errors")
+                      |> filter(fn: (r) => r["_value"] > 0)
+                      |> last(column: "_value")
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 10000
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          labels:
+            device_type: nxos
+            metric: nxos_native_input_ifcounters
+            severity: Medium
+          isPaused: false
+        - uid: e3dfdb46-817c-4346-afae-80fb9221167a
+          title: nxos_input_ifcounters_discards
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: |-
+                    from(bucket: "nxos_metrics")
+                      |> range(start: -1m)
+                      |> filter(fn: (r) => r["_measurement"] == "nxos_native_input_ifcounters")
+                      |> filter(fn: (r) => r["_field"] == "discards")
+                      |> filter(fn: (r) => r["_value"] > 0)
+                      |> last(column: "_value")
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          labels:
+            device_type: nxos
+            metric: nxos_native_input_ifcounters
+            severity: Medium
+          isPaused: false
+        - uid: f7f78534-c2e2-4b2c-9922-e8249b013ff5
+          title: nxos_output_ifcounters_discards
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: |-
+                    from(bucket: "nxos_metrics")
+                      |> range(start: -1m)
+                      |> filter(fn: (r) => r["_measurement"] == "nxos_native_output_ifcounters")
+                      |> filter(fn: (r) => r["_field"] == "discards")
+                      |> filter(fn: (r) => r["_value"] > 0)
+                      |> last(column: "_value")
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 10000
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          labels:
+            device_type: nxos
+            metric: nxos_native_output_ifcounters
+            severity: Medium
+          isPaused: false
+        - uid: cc5e02d7-6f6b-4e73-98b5-4d4610b54086
+          title: nxos_output_ifcounters_errors
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: |-
+                    from(bucket: "nxos_metrics")
+                      |> range(start: -5m)
+                      |> filter(fn: (r) => r["_measurement"] == "nxos_native_output_ifcounters")
+                      |> filter(fn: (r) => r["_field"] == "errors")
+                      |> filter(fn: (r) => r["_value"] > 0)
+                      |> last(column: "_value")
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1e+06
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Alerting
+          for: 1m
+          labels:
+            device_type: nxos
+            metric: nxos_native_output_ifcounters
+            severity: Medium
+          isPaused: false
+        - uid: d0d3f5be-c851-42ae-b4f9-57338475c777
+          title: nxos_interface_admin_state_flap
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: "from(bucket: \"nxos_metrics\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"nxos_native_interface_admin_status\")\n  |> filter(fn: (r) => r[\"_field\"] == \"admin_status_code\")\n  |> unique(column: \"_value\") "
+                refId: A
+            - refId: D
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: "from(bucket: \"nxos_metrics\")\n  |> range(start: -7m, stop: -6m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"nxos_native_interface_admin_status\")\n  |> filter(fn: (r) => r[\"_field\"] == \"admin_status_code\")\n  |> unique(column: \"_value\") "
+                refId: D
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: E
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: D
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: E
+                type: reduce
+            - refId: F
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: abs($B - $E)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: F
+                type: math
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: F
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            description: Interface admin state flap (Up->Down/Down->Up) in last 5 minutes
+          labels:
+            device_type: nxos
+            metric: nxos_native_interface_admin_status
+            severity: High
+          isPaused: false
+        - uid: a38c2360-438a-46d8-a9df-4cafabb6c800
+          title: nxos_bgp_ipv6_bfd_flap
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: "from(bucket: \"nxos_metrics\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"nxos_native_bgp_ipv6_bfd\")\n  |> filter(fn: (r) => r._field == \"operSt_status_code\")  \n  |> unique(column: \"_value\") \n\n"
+                refId: A
+            - refId: D
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: "from(bucket: \"nxos_metrics\")\n  |> range(start: -7m, stop: -6m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"nxos_native_bgp_ipv6_bfd\")\n  |> filter(fn: (r) => r._field == \"operSt_status_code\")  \n  |> unique(column: \"_value\") "
+                refId: D
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: E
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: D
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: E
+                type: reduce
+            - refId: F
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: abs($B - $E)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: F
+                type: math
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: F
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            description: V6 BGP BFD session Operational state flap (Up->Down/Down->Up) in last 5 minutes
+          labels:
+            device_type: nxos
+            metric: nxos_native_bgp_ipv6_bfd
+            severity: High
+          isPaused: false
+        - uid: c9233114-da12-4632-bfa0-e04ee804ac0b
+          title: nxos_out_of_range_interface_light_level_rx
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: "from(bucket: \"nxos_metrics\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"nxos_native_interface_light_level_rx\" )\n  |> filter(fn: (r) => r[\"_field\"] == \"rxPower\" )\n  //|> group(columns: [\"id\", \"_field\"], mode:\"by\")  \n  |> unique(column: \"_value\") \n  |> last()"
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - -5
+                            - 3
+                        type: outside_range
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            description: This alert check the rx light level within a range.
+          labels:
+            device_type: nxos
+            metric: nxos_native_interface_light_level_rx
+            severity: Medium
+          isPaused: false
+        - uid: f6b48f5c-4aea-4c3a-889f-fb4e5b5ceeed
+          title: nxos_out_of_range_interface_light_level_tx
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: "from(bucket: \"nxos_metrics\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"nxos_native_interface_light_level_tx\" )\n  |> filter(fn: (r) => r[\"_field\"] == \"txPower\" )\n  //|> group(columns: [\"id\", \"_field\"], mode:\"by\")  \n  |> unique(column: \"_value\") \n  |> last()"
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - -5
+                            - 5
+                        type: outside_range
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            description: This alert check the tx light level within a range.
+          labels:
+            device_type: nxos
+            metric: nxos_native_interface_light_level_tx
+            severity: Medium
+          isPaused: false
+        - uid: f3ee44b3-3837-48aa-ad8e-3c1f3cc105a2
+          title: nxos_fan_operational_status_down
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: |-
+                    from(bucket: "nxos_metrics")
+                      |> range(start: -5m)
+                      |> filter(fn: (r) => r["_measurement"] == "nxos_native_fan_oper_stats")
+                      |> unique(column: "_value")
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            description: Alarm checks if FAN is down
+          labels:
+            device_type: nxos
+            metric: nxos_native_fan_oper_stats
+            severity: High
+          isPaused: false
+        - uid: ca2e8b88-8cf3-492f-9e51-a55c27a4fd74
+          title: nxos_temperature_sensors_status
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: "from(bucket: \"nxos_metrics\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"nxos_native_temperature_sensors\")\n  |> filter(fn: (r) => r[\"_field\"] == \"operSt_status_code\")\n  |> unique(column: \"_value\")  "
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            description: Alarm checks the temperature sensors
+          labels:
+            device_type: nxos
+            metric: nxos_native_temperature_sensors
+            severity: High
+          isPaused: false
+        - uid: e7f852ad-0374-4d9b-aa55-ce7ae887243c
+          title: nxos_bgp_v6_operational_status
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: a4fe4724-4a9d-42ae-b982-12655b26348d
+              model:
+                datasource:
+                    type: influxdb
+                    uid: a4fe4724-4a9d-42ae-b982-12655b26348d
+                intervalMs: 1000
+                maxDataPoints: 43200
+                query: "from(bucket: \"nxos_metrics\")\n  |> range(start: -5m )\n  |> filter(fn: (r) => r[\"_measurement\"] == \"nxos_native_bgp_oper_stats\")\n  |> filter(fn: (r) => r[\"_field\"] == \"operational_state\")\n  |> unique(column: \"_value\")  \n"
+                refId: A
+            - refId: B
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params: []
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                type: reduce
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            description: Alert to check the bgp V6 operational status
+          labels:
+            device_type: nxos
+            metric: nxos_native_bgp_oper_stats
+            severity: Medium
+          isPaused: false
